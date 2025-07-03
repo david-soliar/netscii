@@ -7,3 +7,9 @@ async function copy() {
         alert("Failed to copy: " + err);
     });
 }
+
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    console.log('Dark mode');
+} else {
+    console.log('Light mode');
+}
