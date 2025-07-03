@@ -1,0 +1,26 @@
+﻿namespace netscii.Models
+{
+    public class FormRequest
+    {
+        public IFormFile Image { get; set; } = null!;
+        public string Characters { get; set; } = "@%#*+=-:. ";
+        public int Scale { get; set; } = 16;
+        public bool Invert { get; set; } = false;
+        public int Font { get; set; } = 0;
+        public string Background { get; set; } = "#FFFFFF";
+
+        public string Status { get; set; } = string.Empty;
+
+        public Stream GetImageStream() => Image.OpenReadStream();
+
+        public bool IsInvalid()
+        {
+            if (Image == null || Image.Length == 0)
+            {
+                Status = "Image file is required.";
+                return true;
+            }
+            return false;
+        }
+    }
+}

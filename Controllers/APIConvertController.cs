@@ -1,15 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 
-public class ConversionFormRequest
-{
-    public IFormFile Image { get; set; } = null!;
-    public string Characters { get; set; } = "@%#*+=-:. ";
-    public int Scale { get; set; } = 8;
-    public bool Invert { get; set; } = false;
-}
-
-
 namespace netscii.Controllers
 {
     [ApiController]
@@ -17,16 +8,103 @@ namespace netscii.Controllers
     public class ConvertApiController : Controller
     {
         [HttpPost("html")]
-        public async Task<IActionResult> ConvertToHtml([FromForm] ConversionFormRequest request)
+        public async Task<IActionResult> ConvertToHTML([FromForm] Models.FormRequest request)
         {
-            if (request.Image == null || request.Image.Length == 0)
-                return BadRequest("Image file is required.");
+            if (request.IsInvalid())
+                return BadRequest(request.Status);
 
-            using var stream = request.Image.OpenReadStream();
+            using var stream = request.GetImageStream();
 
-            var result = await Task.Run( () => Utils.HTMLConverter.Convert(stream, request.Characters, request.Scale, request.Invert));
+            var result = await Task.Run( () => 
+                Utils.Converter.HTML(
+                    stream,
+                    request.Characters,
+                    request.Scale,
+                    request.Invert,
+                    request.Font,
+                    request.Background));
 
             return Content(result, "text/html");
+        }
+
+        [HttpPost("md")]
+        public async Task<IActionResult> ConvertToMD([FromForm] Models.FormRequest request)
+        {
+            if (request.IsInvalid())
+                return BadRequest(request.Status);
+
+            using var stream = request.GetImageStream();
+
+            var result = await Task.Run(() => 
+                Utils.Converter.MD(
+                    stream,
+                    request.Characters,
+                    request.Scale,
+                    request.Invert,
+                    request.Font,
+                    request.Background));
+
+            return Content(result, "text/md");
+        }
+
+        [HttpPost("ansi")]
+        public async Task<IActionResult> ConvertToANSI([FromForm] Models.FormRequest request)
+        {
+            if (request.IsInvalid())
+                return BadRequest(request.Status);
+
+            using var stream = request.GetImageStream();
+
+            var result = await Task.Run(() => 
+                Utils.Converter.ANSI(
+                    stream,
+                    request.Characters,
+                    request.Scale,
+                    request.Invert,
+                    request.Font,
+                    request.Background));
+
+            return Content(result, "text/md");
+        }
+
+        [HttpPost("latex")]
+        public async Task<IActionResult> ConvertToLATEX([FromForm] Models.FormRequest request)
+        {
+            if (request.IsInvalid())
+                return BadRequest(request.Status);
+
+            using var stream = request.GetImageStream();
+
+            var result = await Task.Run(() => 
+                Utils.Converter.LATEX(
+                    stream,
+                    request.Characters,
+                    request.Scale,
+                    request.Invert,
+                    request.Font,
+                    request.Background));
+
+            return Content(result, "text/md");
+        }
+
+        [HttpPost("rtf")]
+        public async Task<IActionResult> ConvertToRTF([FromForm] Models.FormRequest request)
+        {
+            if (request.IsInvalid())
+                return BadRequest(request.Status);
+
+            using var stream = request.GetImageStream();
+
+            var result = await Task.Run(() => 
+                Utils.Converter.RTF(
+                    stream,
+                    request.Characters,
+                    request.Scale,
+                    request.Invert,
+                    request.Font,
+                    request.Background));
+
+            return Content(result, "text/md");
         }
     }
 }

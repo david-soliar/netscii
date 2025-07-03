@@ -1,78 +1,34 @@
 ﻿@{
-    ViewData["Title"] = "Image to HTML ASCII";
-    Layout = "_Layout";
+    ViewData["Title"] = "Convert image to HTML";
 }
 
-<h2>Convert Image to HTML ASCII</h2>
+<h2>Convert Image to HTML</h2>
 
-<form id="convertForm">
+<form method="post" enctype="multipart/form-data" asp-controller="HTML" asp-action="Index">
     <div>
         <label>Select Image:</label>
-        <input type="file" id="imageFile" name="imageFile" accept="image/*" />
+        <input type="file" id="image" name="image" accept="image/*" />
     </div>
     <div>
         <label>Characters:</label>
-        <input type="text" id="characters" name="characters" value="%#*+=-:. "/>
+        <input type="text" id="characters" name="characters" value="@(ViewBag.Characters ?? " %#*+=-:. ")" />
     </div>
     <div>
         <label>Scale (e.g., 8):</label>
-        <input type="number" id="scale" name="scale" min="1" max="50" value="8" />
+        <input type="number" id="scale" name="scale" min="1" max="50" value="@(ViewBag.Scale ?? 8)" />
     </div>
     <div>
         <label>Invert:</label>
-        <input type="checkbox" id="invert" name="invert"/>
+        <input type="checkbox" id="invert" name="invert" @(ViewBag.Invert == true ? "checked" : "") />
     </div>
-    <button type="button" onclick="convertImage()">Convert</button>
+    <button type="submit">Convert</button>
     <button type="button" onclick="copy()">Copy</button>
 </form>
 
 <h3>Generated HTML Art:</h3>
 <div id="result" style="background: black; color: white; padding: 1em; overflow-x: auto; white-space: pre-wrap;">
+    @if (ViewBag.Result != null)
+    {
+        @Html.Raw(ViewBag.Result)
+    }
 </div>
-
-@section Scripts {
-    <script>
-        async function convertImage() {
-            const form = document.getElementById("convertForm");
-            const fileInput = form.querySelector("#imageFile");
-            if (fileInput.files.length === 0) {
-                alert("Please select an image file.");
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append("Image", fileInput.files[0]);
-            formData.append("Characters", form.querySelector("#characters").value);
-            formData.append("Scale", form.querySelector("#scale").value);
-            formData.append("Invert", form.querySelector("#invert").checked);
-
-            try {
-                const response = await fetch("/api/html", {
-                    method: "POST",
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    const errText = await response.text();
-                    alert("Error: " + errText);
-                    return;
-                }
-
-                const html = await response.text();
-                document.getElementById("result").innerHTML = html;
-            } catch (err) {
-                alert("Request failed: " + err);
-            }
-        }
-
-        async function copy() {
-            const cpb = document.getElementById("result").innerHTML;
-            navigator.clipboard.writeText(cpb).then(() => {
-                alert("Copied to clipboard!");
-            }).catch(err => {
-                alert("Failed to copy: " + err);
-            });
-        }
-
-    </script>
-}

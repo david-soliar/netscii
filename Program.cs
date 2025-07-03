@@ -1,9 +1,7 @@
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
 builder.Services.AddControllers();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
-
 
 var app = builder.Build();
 
@@ -20,7 +18,6 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapStaticAssets();
-app.MapRazorPages().WithStaticAssets();
 
 app.MapControllers();
 app.MapControllerRoute(
