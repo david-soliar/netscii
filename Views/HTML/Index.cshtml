@@ -9,6 +9,7 @@
     string characters = ViewBag.Characters ?? " %#*+=-:. ";
     int scale = ViewBag.Scale ?? 8;
     bool invert = ViewBag.Invert == true;
+    bool useBackgroundColor = ViewBag.UseBackgroundColor ?? false;
 }
 
 <h2 class="mb-4">Convert Image to HTML</h2>
@@ -32,14 +33,21 @@
 
     <div class="col-md-4 d-flex align-items-center pt-4">
         <div class="form-check">
-            <input type="checkbox" id="invert" name="invert" class="form-check-input" @(invert ? "checked" : "") />
+            <input type="checkbox" id="invert" name="invert" class="form-check-input" value="true" @(invert ? "checked" : "") />
             <label for="invert" class="form-check-label">Invert colors</label>
         </div>
     </div>
 
     <div class="col-md-4">
-        <label for="background" class="form-label">Background Color:</label>
-        <input type="color" id="background" name="background" value="@selectedBackground" class="form-control form-control-color" title="Choose background color" />
+        <label for="background" class="form-label">
+            Background Color: (<span id="colorValueDisplay" style="font-weight: normal;"></span>)
+        </label>
+        <input type="color" id="background" name="background" value="@selectedBackground" class="form-control form-control-color" title="Choose background color" @(useBackgroundColor ? "" : "disabled") />
+
+        <div class="form-check mt-2">
+            <input type="checkbox" id="useBackgroundColor" name="useBackgroundColor" class="form-check-input" value="true" @(useBackgroundColor ? "checked" : "") />
+            <label for="useBackgroundColor" class="form-check-label">Use Custom Color</label>
+        </div>
     </div>
 
     <div class="col-md-6">
@@ -47,7 +55,7 @@
         <select id="font" name="font" class="form-select">
             @foreach (var font in fonts)
             {
-                <option value="@font" selected="@(font == selectedFont ? "selected" : null)">@font</option>
+                <option style="font-family: @font;" value="@font" selected="@(font == selectedFont ? "selected" : null)">@font</option>
             }
         </select>
     </div>
@@ -55,6 +63,12 @@
     <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
         <button type="submit" class="btn btn-primary">Convert</button>
         <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard()">Copy</button>
+        @if (ViewBag.Result != null)
+        {
+            <button type="button" class="btn btn-success mt-3" onclick="openResultInNewTab()">
+                Open Result in New Tab
+            </button>
+        }
     </div>
 </form>
 

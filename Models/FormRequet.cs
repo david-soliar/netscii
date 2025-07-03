@@ -8,6 +8,7 @@
         public bool Invert { get; set; } = false;
         public string Font { get; set; } = string.Empty;
         public string Background { get; set; } = "#FFFFFF";
+        public bool UseBackgroundColor { get; set; } = false;
 
         public string Status { get; set; } = string.Empty;
 

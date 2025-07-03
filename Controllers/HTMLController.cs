@@ -43,6 +43,17 @@ namespace netscii.Controllers
             ViewBag.Scale = request.Scale;
             ViewBag.Invert = request.Invert;
             ViewBag.Result = result;
+            ViewBag.Background = request.Background ?? "#FFFFFF";
+            ViewBag.UseBackgroundColor = request.UseBackgroundColor;
+            ViewBag.Font = request.Font;
+
+            var fontsFromDb = await _context.Fonts
+                      .Where(f => f.Format == "HTML")
+                      .Select(f => f.Name)
+                      .ToListAsync();
+
+            ViewBag.Fonts = fontsFromDb;
+
             return View();
         }
     }

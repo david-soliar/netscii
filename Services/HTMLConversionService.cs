@@ -18,7 +18,8 @@ namespace netscii.Services
                     request.Scale,
                     request.Invert,
                     request.Font,
-                    request.Background);
+                    request.Background,
+                    request.UseBackgroundColor);
             });
         }
     }
