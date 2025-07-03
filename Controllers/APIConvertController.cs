@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
+using netscii.Models;
+using netscii.Services.Interfaces;
 
 namespace netscii.Controllers
 {
@@ -7,104 +8,37 @@ namespace netscii.Controllers
     [Route("api/")]
     public class ConvertApiController : Controller
     {
-        [HttpPost("html")]
-        public async Task<IActionResult> ConvertToHTML([FromForm] Models.FormRequest request)
+        private readonly NetsciiContext _context;
+        private readonly Dictionary<string, IConversionService> _conversionServices;
+
+        public ConvertApiController(IEnumerable<IConversionService> conversionServices, NetsciiContext context)
         {
-            if (request.IsInvalid())
-                return BadRequest(request.Status);
-
-            using var stream = request.GetImageStream();
-
-            var result = await Task.Run( () => 
-                Utils.Converter.HTML(
-                    stream,
-                    request.Characters,
-                    request.Scale,
-                    request.Invert,
-                    request.Font,
-                    request.Background));
-
-            return Content(result, "text/html");
+            _conversionServices = conversionServices.ToDictionary(s => s.FormatName, s => s);
+            _context = context;
         }
 
-        [HttpPost("md")]
-        public async Task<IActionResult> ConvertToMD([FromForm] Models.FormRequest request)
+        [HttpPost("{format}")]
+        public async Task<IActionResult> Convert([FromRoute] string format, [FromForm] FormRequest request)
         {
             if (request.IsInvalid())
                 return BadRequest(request.Status);
 
-            using var stream = request.GetImageStream();
+            if (!_conversionServices.TryGetValue(format.ToLowerInvariant(), out var service))
+                return BadRequest("Unsupported format");
 
-            var result = await Task.Run(() => 
-                Utils.Converter.MD(
-                    stream,
-                    request.Characters,
-                    request.Scale,
-                    request.Invert,
-                    request.Font,
-                    request.Background));
+            var result = await service.ConvertAsync(request);
 
-            return Content(result, "text/md");
-        }
+            string contentType = format.ToLowerInvariant() switch
+            {
+                "html" => "text/html",
+                "md" => "text/markdown",
+                "ansi" => "text/plain",
+                "latex" => "application/x-latex",
+                "rtf" => "application/rtf",
+                _ => "text/plain"
+            };
 
-        [HttpPost("ansi")]
-        public async Task<IActionResult> ConvertToANSI([FromForm] Models.FormRequest request)
-        {
-            if (request.IsInvalid())
-                return BadRequest(request.Status);
-
-            using var stream = request.GetImageStream();
-
-            var result = await Task.Run(() => 
-                Utils.Converter.ANSI(
-                    stream,
-                    request.Characters,
-                    request.Scale,
-                    request.Invert,
-                    request.Font,
-                    request.Background));
-
-            return Content(result, "text/md");
-        }
-
-        [HttpPost("latex")]
-        public async Task<IActionResult> ConvertToLATEX([FromForm] Models.FormRequest request)
-        {
-            if (request.IsInvalid())
-                return BadRequest(request.Status);
-
-            using var stream = request.GetImageStream();
-
-            var result = await Task.Run(() => 
-                Utils.Converter.LATEX(
-                    stream,
-                    request.Characters,
-                    request.Scale,
-                    request.Invert,
-                    request.Font,
-                    request.Background));
-
-            return Content(result, "text/md");
-        }
-
-        [HttpPost("rtf")]
-        public async Task<IActionResult> ConvertToRTF([FromForm] Models.FormRequest request)
-        {
-            if (request.IsInvalid())
-                return BadRequest(request.Status);
-
-            using var stream = request.GetImageStream();
-
-            var result = await Task.Run(() => 
-                Utils.Converter.RTF(
-                    stream,
-                    request.Characters,
-                    request.Scale,
-                    request.Invert,
-                    request.Font,
-                    request.Background));
-
-            return Content(result, "text/md");
+            return Content(result, contentType);
         }
     }
 }

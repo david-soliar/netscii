@@ -1,15 +1,34 @@
-﻿
-async function copy() {
-    const cpb = document.getElementById("result").innerHTML;
-    navigator.clipboard.writeText(cpb).then(() => {
+﻿async function copyToClipboard() {
+    try {
+        const content = document.getElementById("result").innerHTML;
+        await navigator.clipboard.writeText(content);
         alert("Copied to clipboard!");
-    }).catch(err => {
+    } catch (err) {
         alert("Failed to copy: " + err);
-    });
+    }
 }
 
-if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    console.log('Dark mode');
-} else {
-    console.log('Light mode');
-}
+(function initializeThemeToggle() {
+    const toggleBtn = document.getElementById('themeToggle');
+    const htmlEl = document.documentElement;
+
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTheme(prefersDark ? 'dark' : 'light');
+    }
+
+    toggleBtn.addEventListener('click', () => {
+        const currentTheme = htmlEl.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+    });
+
+    function setTheme(theme) {
+        htmlEl.setAttribute('data-bs-theme', theme);
+        toggleBtn.textContent = theme === 'dark' ? '☀️ Light' : '🌙 Dark';
+    }
+})();

@@ -1,0 +1,68 @@
+﻿@using System.Linq
+
+@{
+    ViewData["Title"] = "Convert image to HTML";
+
+    var fonts = ViewBag.Fonts as List<string> ?? new List<string> { "Courier New", "Consolas", "Monospace" };
+    string selectedBackground = ViewBag.Background ?? "#FFFFFF";
+    string selectedFont = ViewBag.Font ?? fonts.FirstOrDefault() ?? "Courier New";
+    string characters = ViewBag.Characters ?? " %#*+=-:. ";
+    int scale = ViewBag.Scale ?? 8;
+    bool invert = ViewBag.Invert == true;
+}
+
+<h2 class="mb-4">Convert Image to HTML</h2>
+
+<form method="post" enctype="multipart/form-data" asp-controller="HTML" asp-action="Index" class="row g-3">
+    <div class="col-md-6">
+        <label for="image" class="form-label">Select Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" class="form-control" required />
+    </div>
+
+    <div class="col-md-6">
+        <label for="characters" class="form-label">Characters:</label>
+        <input type="text" id="characters" name="characters" value="@characters" class="form-control" />
+        <div class="form-text">Characters used for conversion</div>
+    </div>
+
+    <div class="col-md-4">
+        <label for="scale" class="form-label">Scale (e.g., 8):</label>
+        <input type="number" id="scale" name="scale" min="1" max="50" value="@scale" class="form-control" />
+    </div>
+
+    <div class="col-md-4 d-flex align-items-center pt-4">
+        <div class="form-check">
+            <input type="checkbox" id="invert" name="invert" class="form-check-input" @(invert ? "checked" : "") />
+            <label for="invert" class="form-check-label">Invert colors</label>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <label for="background" class="form-label">Background Color:</label>
+        <input type="color" id="background" name="background" value="@selectedBackground" class="form-control form-control-color" title="Choose background color" />
+    </div>
+
+    <div class="col-md-6">
+        <label for="font" class="form-label">Font:</label>
+        <select id="font" name="font" class="form-select">
+            @foreach (var font in fonts)
+            {
+                <option value="@font" selected="@(font == selectedFont ? "selected" : null)">@font</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
+        <button type="submit" class="btn btn-primary">Convert</button>
+        <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard()">Copy</button>
+    </div>
+</form>
+
+<h3 class="mt-5">Generated HTML Art:</h3>
+
+<div id="result" class="rounded p-3 bg-body text-body w-100 border border-primary" style="min-height: 100px;">
+    @if (ViewBag.Result != null)
+    {
+        @Html.Raw(ViewBag.Result)
+    }
+</div>

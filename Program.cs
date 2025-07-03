@@ -1,7 +1,22 @@
+using Microsoft.EntityFrameworkCore;
+using netscii.Models;
+using netscii.Services;
+using netscii.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+builder.Services.AddSingleton<IConversionService, HTMLConversionService>();
+builder.Services.AddSingleton<IConversionService, MDConversionService>();
+builder.Services.AddSingleton<IConversionService, ANSIConversionService>();
+builder.Services.AddSingleton<IConversionService, LATEXConversionService>();
+builder.Services.AddSingleton<IConversionService, RTFConversionService>();
+
+builder.Services.AddDbContext<NetsciiContext>(options =>
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 
 var app = builder.Build();
 
@@ -24,5 +39,10 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<NetsciiContext>();
+    DBInitializer.Initialize(dbContext);
+}
 
 app.Run();

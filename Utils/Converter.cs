@@ -34,7 +34,7 @@ namespace netscii.Utils
             }
         }
 
-        public static string HTML(Stream imageStream, string characters, int scale, bool invert, int font, string background)
+        public static string HTML(Stream imageStream, string characters, int scale, bool invert, string font, string background)
         {
             var sb = new StringBuilder();
 
@@ -63,29 +63,28 @@ namespace netscii.Utils
             return sb.ToString();
         }
 
-        public static string MD(System.IO.Stream imageStream, string characters, int scale, bool invert, int font, string background)
+        public static string MD(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background)
         {
             // Your MD conversion logic here
             return HTML(imageStream, characters, scale, invert, font, background);
         }
 
-        public static string ANSI(System.IO.Stream imageStream, string characters, int scale, bool invert, int font, string background)
+        public static string ANSI(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background)
         {
             // Your ANSI conversion logic here
             return HTML(imageStream, characters, scale, invert, font, background);
         }
 
-        public static string LATEX(System.IO.Stream imageStream, string characters, int scale, bool invert, int font, string background)
+        public static string LATEX(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background)
         {
             // Your LATEX conversion logic here
             return HTML(imageStream, characters, scale, invert, font, background);
         }
 
-        public static string RTF(System.IO.Stream imageStream, string characters, int scale, bool invert, int font, string background)
+        public static string RTF(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background)
         {
             // Your RTF conversion logic here
             return HTML(imageStream, characters, scale, invert, font, background);
         }
-
     }
 }

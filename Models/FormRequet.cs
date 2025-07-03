@@ -6,7 +6,7 @@
         public string Characters { get; set; } = "@%#*+=-:. ";
         public int Scale { get; set; } = 16;
         public bool Invert { get; set; } = false;
-        public int Font { get; set; } = 0;
+        public string Font { get; set; } = string.Empty;
         public string Background { get; set; } = "#FFFFFF";
 
         public string Status { get; set; } = string.Empty;
