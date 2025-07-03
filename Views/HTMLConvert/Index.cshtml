@@ -23,6 +23,7 @@
         <input type="checkbox" id="invert" name="invert"/>
     </div>
     <button type="button" onclick="convertImage()">Convert</button>
+    <button type="button" onclick="copy()">Copy</button>
 </form>
 
 <h3>Generated HTML Art:</h3>
@@ -62,6 +63,15 @@
             } catch (err) {
                 alert("Request failed: " + err);
             }
+        }
+
+        async function copy() {
+            const cpb = document.getElementById("result").innerHTML;
+            navigator.clipboard.writeText(cpb).then(() => {
+                alert("Copied to clipboard!");
+            }).catch(err => {
+                alert("Failed to copy: " + err);
+            });
         }
 
     </script>
