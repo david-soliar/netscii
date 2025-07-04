@@ -179,16 +179,36 @@ namespace netscii.Utils
             return document.ToString();
         }
 
-        public static string ANSI(Stream imageStream, int scale, bool invert, string font, bool useSmallPalette)
+        public static string ANSI(Stream imageStream, int scale, bool invert, string operatingSystem, bool useSmallPalette)
         {
             var sb = new StringBuilder();
 
-            string escape = font switch
+            string escape = operatingSystem switch
             {
                 "Windows" => "$([char]27)",
                 "Linux/Mac" => "\\e",
                 _ => string.Empty
             };
+
+            string newLine = operatingSystem switch
+            {
+                "Windows" => "`n",
+                "Linux/Mac" => "\\n",
+                _ => string.Empty
+            };
+
+            if (operatingSystem == "Windows")
+            {
+                sb.Append("Write-Host \"");
+            }
+            else if (operatingSystem == "Linux/Mac")
+            {
+                sb.Append("printf \"");
+            }
+            else
+            {
+                sb.Append("// Unsupported OS");
+            }
 
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
@@ -231,18 +251,18 @@ namespace netscii.Utils
 
                     if (useSmallPalette)
                     {
-                        int r = (int)Math.Round(Math.Clamp(pixelTop.R / 255.0 * 5, 0, 5));
-                        int g = (int)Math.Round(Math.Clamp(pixelTop.G / 255.0 * 5, 0, 5));
-                        int b = (int)Math.Round(Math.Clamp(pixelTop.B / 255.0 * 5, 0, 5));
+                        int r = (int)Math.Floor(Math.Clamp(pixelTop.R / 255.0 * 5, 0, 5));
+                        int g = (int)Math.Floor(Math.Clamp(pixelTop.G / 255.0 * 5, 0, 5));
+                        int b = (int)Math.Floor(Math.Clamp(pixelTop.B / 255.0 * 5, 0, 5));
                         int pixelTopSmall = 16 + 36 * r + 6 * g + b;
 
-                        r = (int)Math.Round(Math.Clamp(pixelBottom.R / 255.0 * 5, 0, 5));
-                        g = (int)Math.Round(Math.Clamp(pixelBottom.G / 255.0 * 5, 0, 5));
-                        b = (int)Math.Round(Math.Clamp(pixelBottom.B / 255.0 * 5, 0, 5));
+                        r = (int)Math.Floor(Math.Clamp(pixelBottom.R / 255.0 * 5, 0, 5));
+                        g = (int)Math.Floor(Math.Clamp(pixelBottom.G / 255.0 * 5, 0, 5));
+                        b = (int)Math.Floor(Math.Clamp(pixelBottom.B / 255.0 * 5, 0, 5));
                         int pixelBottomSmall = 16 + 36 * r + 6 * g + b;
 
-                        fg = $"{escape}[38;5;{pixelTopSmall};m";
-                        bg = $"{escape}[48;5;{pixelBottomSmall};m";
+                        fg = $"{escape}[38;5;{pixelTopSmall}m";
+                        bg = $"{escape}[48;5;{pixelBottomSmall}m";
                     }
                     else
                     {
@@ -252,9 +272,10 @@ namespace netscii.Utils
 
                     sb.Append($"{fg}{bg}▀");
                 }
-                sb.Append("{escape}[0m\n");
+                sb.Append($"{escape}[0m{newLine}");
             }
-            sb.Append("{escape}[0m");
+            sb.Append($"{escape}[0m");
+            sb.Append("\"");
             return sb.ToString();
         }
 

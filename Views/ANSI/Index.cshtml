@@ -1,0 +1,67 @@
+﻿@using System.Linq
+
+@{
+    ViewData["Title"] = "Convert image to ANSI";
+
+    var operatingSystems = ViewBag.OperatingSystems as List<string> ?? new List<string> { "Windows", "Linux/Mac"};
+    string selectedOperatingSystem = ViewBag.OperatingSystem ?? operatingSystems.FirstOrDefault() ?? "Linux/Mac";
+    int scale = ViewBag.Scale ?? 8;
+    bool invert = ViewBag.Invert == true;
+    bool useSmallPalette = ViewBag.UseSmallPalette == true;
+}
+
+<h2 class="mb-4">Convert Image to ANSI</h2>
+
+<form method="post" enctype="multipart/form-data" asp-controller="ANSI" asp-action="Index" class="row g-3">
+    <div class="col-md-6">
+        <label for="image" class="form-label">Select Image:</label>
+        <input type="file" id="image" name="image" accept="image/*" class="form-control" required />
+    </div>
+
+    <div class="col-md-4">
+        <label for="scale" class="form-label">Scale (e.g., 8):</label>
+        <input type="number" id="scale" name="scale" min="1" value="@scale" class="form-control" />
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label d-block">Options:</label>
+        <div class="form-check">
+            <input type="checkbox" id="invert" name="invert" class="form-check-input" value="true" @(invert ? "checked" : "") />
+            <label for="invert" class="form-check-label">Invert colors</label>
+        </div>
+        <div class="form-check">
+            <input type="checkbox" id="useSmallPalette" name="useSmallPalette" class="form-check-input" value="true" @(useSmallPalette ? "checked" : "") />
+            <label for="useSmallPalette" class="form-check-label">Use 256 colors (old systems)</label>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <label for="operatingSystem" class="form-label">Target Operating System:</label>
+        <select id="operatingSystem" name="operatingSystem" class="form-select">
+            @foreach (var operatingSystem in operatingSystems)
+            {
+                <option value="@operatingSystem" selected="@(operatingSystem == selectedOperatingSystem ? "selected" : null)">@operatingSystem</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
+        <button type="submit" class="btn btn-primary">Convert</button>
+        <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard()">Copy</button>
+        @if (ViewBag.Result != null)
+        {
+            <button type="button" class="btn btn-success mt-3" onclick="openResultInNewTab()">
+                Open Result in New Tab
+            </button>
+        }
+    </div>
+</form>
+
+<h3 class="mt-5">Generated HTML Art:</h3>
+
+<div id="result" class="rounded p-3 bg-body text-body w-100 border border-primary" style="min-height: 100px;">
+    @if (ViewBag.Result != null)
+    {
+        @Html.Raw(ViewBag.Result)
+    }
+</div>

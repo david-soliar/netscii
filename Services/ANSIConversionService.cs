@@ -16,7 +16,7 @@ namespace netscii.Services
                     stream,
                     request.Scale,
                     request.Invert,
-                    request.Font,
+                    request.OperatingSystem,
                     request.UseSmallPalette);
             });
         }
