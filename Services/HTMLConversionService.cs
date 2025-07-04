@@ -3,7 +3,7 @@ using netscii.Services.Interfaces;
 
 namespace netscii.Services
 {
-    public class HTMLConversionService : IConversionService
+    public class HTMLConversionService : IHTMLConversionService
     {
         public string FormatName => "html";
 

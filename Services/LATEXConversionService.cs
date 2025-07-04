@@ -3,7 +3,7 @@ using netscii.Services.Interfaces;
 
 namespace netscii.Services
 {
-    public class LATEXConversionService : IConversionService
+    public class LATEXConversionService : ILATEXConversionService
     {
         public string FormatName => "latex";
 
@@ -19,7 +19,8 @@ namespace netscii.Services
                     request.Invert,
                     request.Font,
                     request.Background,
-                    request.UseBackgroundColor);
+                    request.UseBackgroundColor,
+                    request.CreateFullDocument);
             });
         }
     }

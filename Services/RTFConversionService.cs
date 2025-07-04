@@ -3,7 +3,7 @@ using netscii.Services.Interfaces;
 
 namespace netscii.Services
 {
-    public class RTFConversionService : IConversionService
+    public class RTFConversionService : IRTFConversionService
     {
         public string FormatName => "rtf";
 

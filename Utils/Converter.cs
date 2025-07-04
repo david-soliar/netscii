@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using Microsoft.Extensions.Primitives;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Text;
@@ -8,7 +9,7 @@ namespace netscii.Utils
 {
     public class Converter
     {
-        private static void Convert(Stream imageStream, int scale, Action<Rgba32, int> processPixel, Action<int> processRow)
+        private static int[] Convert(Stream imageStream, int scale, Action<Rgba32, int> processPixel, Action<int> processRow)
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
@@ -37,6 +38,7 @@ namespace netscii.Utils
                 }
                 processRow(y);
             }
+            return new int[] { width / scale, height / scale};
         }
 
         public static string HTML(Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor)
@@ -101,10 +103,80 @@ namespace netscii.Utils
             return css.Append(html).ToString();
         }
 
-        public static string MD(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor)
+        public static string LATEX(Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor, bool createFullDocument)
         {
-            // Your MD conversion logic here
-            return HTML(imageStream, characters, scale, invert, font, background, useBackgroundColor);
+            var document = new StringBuilder();
+            var tex = new StringBuilder();
+
+            Action<Rgba32, int> processPixel = (pixel, count) =>
+            {
+                int brightness = (pixel.R + pixel.G + pixel.B) / 3;
+                if (invert)
+                    brightness = 255 - brightness;
+                double r = (invert ? 255 - pixel.R : pixel.R) / 255.0;
+                double g = (invert ? 255 - pixel.G : pixel.G) / 255.0;
+                double b = (invert ? 255 - pixel.B : pixel.B) / 255.0;
+
+
+                int charIndex = brightness * (characters.Length - 1) / 255;
+
+                if (count > 1)
+                {
+                    Console.Write("optimized pixels: "); Console.Write(count); Console.Write("\n");
+                }
+
+                tex.AppendFormat("{{\\color[rgb]{{{0},{1},{2}}} {3}}}", 
+                    r, g, b, 
+                    new string(characters[charIndex], count));
+            };
+
+            Action<int> processRow = index =>
+            {
+                tex.AppendLine(@"\newline").AppendLine();
+            };
+
+            if (createFullDocument)
+            {
+                document.AppendLine("\\documentclass{article}");
+                document.AppendLine("\\usepackage{xcolor}");
+                document.AppendLine("\\linespread{0}");
+            }
+            if (useBackgroundColor)
+            {
+                document.AppendLine("\\definecolor{mybg}{rgb}{0.1,0.2,0.3}");
+                document.AppendLine("\\pagecolor{mybg}");
+            }
+
+            int[] dimensions = Convert(imageStream, scale, processPixel, processRow);
+            if (createFullDocument)
+            {
+                double charWidthCm = 0.2;
+                double charHeightCm = 0.28;
+                double paperWidthCm = charWidthCm * dimensions[0];
+                double paperHeightCm = charHeightCm * dimensions[1];
+                document.AppendLine($"\\usepackage[paperwidth={paperWidthCm}cm, paperheight={paperHeightCm}cm, margin=0pt]{{geometry}}");
+            }
+
+            if (createFullDocument)
+            {
+                document.AppendLine("\\begin{document}");
+                document.AppendLine("\\vbox to \\textheight{");
+                document.AppendLine("\\vfill");
+                document.AppendLine("\\begin{center}");
+                document.AppendLine("{\\ttfamily");
+                document.AppendLine("\\setlength{\\baselineskip}{0pt}");
+            }
+            document.Append(tex);
+            if (createFullDocument)
+            {
+                document.AppendLine("}");
+                document.AppendLine("\\end{center}").AppendLine();
+                document.AppendLine("\\vfill");
+                document.AppendLine("}");
+                document.AppendLine("\\end{document}").AppendLine();
+            }
+
+            return document.ToString();
         }
 
         public static string ANSI(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor)
@@ -113,7 +185,7 @@ namespace netscii.Utils
             return HTML(imageStream, characters, scale, invert, font, background, useBackgroundColor);
         }
 
-        public static string LATEX(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor)
+        public static string MD(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor, bool createFullDocument)
         {
             // Your LATEX conversion logic here
             return HTML(imageStream, characters, scale, invert, font, background, useBackgroundColor);

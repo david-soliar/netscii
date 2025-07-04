@@ -3,12 +3,13 @@
     public class FormRequest
     {
         public IFormFile Image { get; set; } = null!;
-        public string Characters { get; set; } = "@%#*+=-:. ";
+        public string Characters { get; set; } = string.Empty;
         public int Scale { get; set; } = 16;
         public bool Invert { get; set; } = false;
         public string Font { get; set; } = string.Empty;
         public string Background { get; set; } = "#FFFFFF";
         public bool UseBackgroundColor { get; set; } = false;
+        public bool CreateFullDocument { get; set; } = true;
 
         public string Status { get; set; } = string.Empty;
 

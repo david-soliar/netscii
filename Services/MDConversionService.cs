@@ -3,7 +3,7 @@ using netscii.Services.Interfaces;
 
 namespace netscii.Services
 {
-    public class MDConversionService : IConversionService
+    public class MDConversionService : IMDConversionService
     {
         public string FormatName => "md";
 
@@ -19,7 +19,8 @@ namespace netscii.Services
                     request.Invert,
                     request.Font,
                     request.Background,
-                    request.UseBackgroundColor);
+                    request.UseBackgroundColor,
+                    request.CreateFullDocument);
             });
         }
     }

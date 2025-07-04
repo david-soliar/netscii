@@ -8,11 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-builder.Services.AddSingleton<IConversionService, HTMLConversionService>();
-builder.Services.AddSingleton<IConversionService, MDConversionService>();
-builder.Services.AddSingleton<IConversionService, ANSIConversionService>();
-builder.Services.AddSingleton<IConversionService, LATEXConversionService>();
-builder.Services.AddSingleton<IConversionService, RTFConversionService>();
+builder.Services.AddSingleton<IHTMLConversionService, HTMLConversionService>();
+builder.Services.AddSingleton<IMDConversionService, MDConversionService>();
+builder.Services.AddSingleton<IANSIConversionService, ANSIConversionService>();
+builder.Services.AddSingleton<ILATEXConversionService, LATEXConversionService>();
+builder.Services.AddSingleton<IRTFConversionService, RTFConversionService>();
 
 builder.Services.AddDbContext<NetsciiContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));

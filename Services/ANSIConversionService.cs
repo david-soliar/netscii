@@ -3,7 +3,7 @@ using netscii.Services.Interfaces;
 
 namespace netscii.Services
 {
-    public class ANSIConversionService : IConversionService
+    public class ANSIConversionService : IANSIConversionService
     {
         public string FormatName => "ansi";
 
