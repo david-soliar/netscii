@@ -14,12 +14,10 @@ namespace netscii.Services
                 using var stream = request.GetImageStream();
                 return Utils.Converter.ANSI(
                     stream,
-                    request.Characters,
                     request.Scale,
                     request.Invert,
                     request.Font,
-                    request.Background,
-                    request.UseBackgroundColor);
+                    request.UseSmallPalette);
             });
         }
     }

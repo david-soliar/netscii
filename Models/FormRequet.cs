@@ -10,6 +10,8 @@
         public string Background { get; set; } = "#FFFFFF";
         public bool UseBackgroundColor { get; set; } = false;
         public bool CreateFullDocument { get; set; } = true;
+        public string OperatingSystem { get; set; } = "Linux/Mac";
+        public bool UseSmallPalette { get; set; } = false;
 
         public string Status { get; set; } = string.Empty;
 

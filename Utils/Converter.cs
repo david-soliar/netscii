@@ -179,19 +179,92 @@ namespace netscii.Utils
             return document.ToString();
         }
 
-        public static string ANSI(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor)
+        public static string ANSI(Stream imageStream, int scale, bool invert, string font, bool useSmallPalette)
         {
-            // Your ANSI conversion logic here
-            return HTML(imageStream, characters, scale, invert, font, background, useBackgroundColor);
+            var sb = new StringBuilder();
+
+            string escape = font switch
+            {
+                "Windows" => "$([char]27)",
+                "Linux/Mac" => "\\e",
+                _ => string.Empty
+            };
+
+            using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
+
+            var memoryGroup = image.GetPixelMemoryGroup();
+
+            var pixelMemory = memoryGroup[0];
+            var pixels = pixelMemory.Span;
+
+            int width = image.Width;
+            int height = image.Height;
+
+            for (int y = 0; y + scale < height; y += (scale * 2))
+            {
+                for (int x = 0; x < width; x += scale)
+                {
+                    int indexTop = y * width + x;
+                    int indexBottom = (y + scale) * width + x;
+
+                    Rgba32 pixelTop = pixels[indexTop];
+                    Rgba32 pixelBottom = pixels[indexBottom];
+
+                    if (invert)
+                    {
+                        pixelTop = new Rgba32(
+                            (byte)(255 - pixelTop.R),
+                            (byte)(255 - pixelTop.G),
+                            (byte)(255 - pixelTop.B),
+                            pixelTop.A
+                        );
+                        pixelBottom = new Rgba32(
+                            (byte)(255 - pixelBottom.R),
+                            (byte)(255 - pixelBottom.G),
+                            (byte)(255 - pixelBottom.B),
+                            pixelBottom.A
+                        );
+                    }
+
+                    string fg = string.Empty;
+                    string bg = string.Empty;
+
+                    if (useSmallPalette)
+                    {
+                        int r = (int)Math.Round(Math.Clamp(pixelTop.R / 255.0 * 5, 0, 5));
+                        int g = (int)Math.Round(Math.Clamp(pixelTop.G / 255.0 * 5, 0, 5));
+                        int b = (int)Math.Round(Math.Clamp(pixelTop.B / 255.0 * 5, 0, 5));
+                        int pixelTopSmall = 16 + 36 * r + 6 * g + b;
+
+                        r = (int)Math.Round(Math.Clamp(pixelBottom.R / 255.0 * 5, 0, 5));
+                        g = (int)Math.Round(Math.Clamp(pixelBottom.G / 255.0 * 5, 0, 5));
+                        b = (int)Math.Round(Math.Clamp(pixelBottom.B / 255.0 * 5, 0, 5));
+                        int pixelBottomSmall = 16 + 36 * r + 6 * g + b;
+
+                        fg = $"{escape}[38;5;{pixelTopSmall};m";
+                        bg = $"{escape}[48;5;{pixelBottomSmall};m";
+                    }
+                    else
+                    {
+                        fg = $"{escape}[38;2;{pixelTop.R};{pixelTop.G};{pixelTop.B}m";
+                        bg = $"{escape}[48;2;{pixelBottom.R};{pixelBottom.G};{pixelBottom.B}m";
+                    }
+
+                    sb.Append($"{fg}{bg}▀");
+                }
+                sb.Append("{escape}[0m\n");
+            }
+            sb.Append("{escape}[0m");
+            return sb.ToString();
         }
 
-        public static string MD(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor, bool createFullDocument)
+        public static string MD(Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor, bool createFullDocument)
         {
             // Your LATEX conversion logic here
             return HTML(imageStream, characters, scale, invert, font, background, useBackgroundColor);
         }
 
-        public static string RTF(System.IO.Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor)
+        public static string RTF(Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor)
         {
             // Your RTF conversion logic here
             return HTML(imageStream, characters, scale, invert, font, background, useBackgroundColor);
