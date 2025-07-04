@@ -3,24 +3,23 @@ using netscii.Services.Interfaces;
 
 namespace netscii.Services
 {
-    public class MDConversionService : IMDConversionService
+    public class SVGConversionService : ISVGConversionService
     {
-        public string FormatName => "md";
+        public string FormatName => "svg";
 
         public Task<string> ConvertAsync(FormRequest request)
         {
             return Task.Run(() =>
             {
                 using var stream = request.GetImageStream();
-                return Utils.Converter.MD(
+                return Utils.Converter.SVG(
                     stream,
                     request.Characters,
                     request.Scale,
                     request.Invert,
                     request.Font,
                     request.Background,
-                    request.UseBackgroundColor,
-                    request.CreateFullDocument);
+                    request.UseBackgroundColor);
             });
         }
     }

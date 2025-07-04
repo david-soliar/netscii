@@ -31,7 +31,7 @@ namespace netscii.Controllers
             string contentType = format.ToLowerInvariant() switch
             {
                 "html" => "text/html",
-                "md" => "text/markdown",
+                "svg" => "text/markdown", //toto zmenit
                 "ansi" => "text/plain",
                 "latex" => "application/x-latex",
                 "rtf" => "application/rtf",

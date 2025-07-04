@@ -9,7 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 builder.Services.AddSingleton<IHTMLConversionService, HTMLConversionService>();
-builder.Services.AddSingleton<IMDConversionService, MDConversionService>();
+builder.Services.AddSingleton<ISVGConversionService, SVGConversionService>();
 builder.Services.AddSingleton<IANSIConversionService, ANSIConversionService>();
 builder.Services.AddSingleton<ILATEXConversionService, LATEXConversionService>();
 builder.Services.AddSingleton<IRTFConversionService, RTFConversionService>();
@@ -46,3 +46,5 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+//add SVG EMOJI

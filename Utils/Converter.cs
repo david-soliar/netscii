@@ -2,6 +2,7 @@
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
+using System;
 using System.Text;
 
 
@@ -279,10 +280,51 @@ namespace netscii.Utils
             return sb.ToString();
         }
 
-        public static string MD(Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor, bool createFullDocument)
+        public static string SVG(Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor)
         {
-            // Your LATEX conversion logic here
-            return HTML(imageStream, characters, scale, invert, font, background, useBackgroundColor);
+            var sb = new StringBuilder();
+
+            using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
+
+            var memoryGroup = image.GetPixelMemoryGroup();
+
+            var pixelMemory = memoryGroup[0];
+            var pixels = pixelMemory.Span;
+
+            int width = image.Width;
+            int height = image.Height;
+
+            sb.AppendLine($"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {width / scale * 16} {height / scale * 32}\" width=\"100%\" height=\"auto\" font-family=\"{font}\" font-size=\"32\" preserveAspectRatio=\"xMinYMin meet\">");
+
+            string bg = useBackgroundColor ? background : "transparent";
+            sb.AppendLine($"<rect width=\"100%\" height=\"100%\" fill=\"{bg}\" />");
+
+            int ySVG = 24;
+            for (int y = 0; y < height; y += scale)
+            {
+                sb.AppendLine($"<text y=\"{ySVG}\">");
+                ySVG += 32;
+                int xSVG = 0;
+                for (int x = 0; x < width; x += scale)
+                {
+                    int index = y * width + x;
+
+                    Rgba32 pixel = pixels[index];
+
+                    int brightness = (pixel.R + pixel.G + pixel.B) / 3;
+                    if (invert)
+                        brightness = 255 - brightness;
+
+                    int charIndex = brightness * (characters.Length - 1) / 255;
+
+                    string hex = $"{pixel.R:X2}{pixel.G:X2}{pixel.B:X2}";
+                    sb.AppendLine($"<tspan x=\"{xSVG}\" fill=\"#{hex}\">{characters[charIndex]}</tspan>");
+                    xSVG += 16;
+                }
+                sb.AppendLine("</text>");
+            }
+            sb.AppendLine("</svg>");
+            return sb.ToString();
         }
 
         public static string RTF(Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor)
