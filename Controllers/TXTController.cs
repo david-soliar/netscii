@@ -8,37 +8,19 @@ using System;
 namespace netscii.Controllers
 {
     [Route("txt")]
-    public class TXTController : Controller
+    public class TXTController : BaseController
     {
-        private readonly NetsciiContext _context;
-        private readonly IConversionService _txtConversionService;
-
-        public TXTController(ITXTConversionService txtConversionService, NetsciiContext context)
-        {
-            _txtConversionService = txtConversionService;
-            _context = context;
-        }
+        public TXTController(ITXTConversionService conversionService, NetsciiContext context)
+            : base(conversionService, context) { }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public override async Task<IActionResult> Index()
         {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Index([FromForm] FormRequest request)
-        {
-            if (request.IsInvalid())
-                return BadRequest(request.Status);
-
-            var result = await _txtConversionService.ConvertAsync(request);
-
-            ViewBag.Characters = request.Characters;
-            ViewBag.Scale = request.Scale;
-            ViewBag.Invert = request.Invert;
-            ViewBag.Result = result;
-
-            return View();
+            var model = new ConversionViewModel
+            {
+                Controller = "TXT"
+            };
+            return View(model);
         }
     }
 }

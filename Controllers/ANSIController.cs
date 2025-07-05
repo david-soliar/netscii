@@ -9,41 +9,20 @@ using System;
 namespace netscii.Controllers
 {
     [Route("ansi")]
-    public class ANSIController : Controller
+    public class ANSIController : BaseController
     {
-        private readonly NetsciiContext _context;
-        private readonly IConversionService _ansiConversionService;
-
-        public ANSIController(IANSIConversionService ansiConversionService, NetsciiContext context)
-        {
-            _ansiConversionService = ansiConversionService;
-            _context = context;
-        }
+        public ANSIController(IANSIConversionService conversionService, NetsciiContext context)
+            : base(conversionService, context) { }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public override async Task<IActionResult> Index()
         {
             // tu z db OS ktore viem spravit
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Index([FromForm] FormRequest request)
-        {
-            if (request.IsInvalid())
-                return BadRequest(request.Status);
-
-            var result = await _ansiConversionService.ConvertAsync(request);
-
-            ViewBag.Scale = request.Scale;
-            ViewBag.Invert = request.Invert;
-            ViewBag.Result = result;
-            ViewBag.OperatingSystem = request.OperatingSystem;
-            ViewBag.UseSmallPalette = request.UseSmallPalette;
-
-            // z db OSes
-
-            return View();
+            var model = new ConversionViewModel
+            {
+                Controller = "ANSI"
+            };
+            return View(model);
         }
     }
 }

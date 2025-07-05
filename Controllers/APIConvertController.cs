@@ -18,7 +18,7 @@ namespace netscii.Controllers
         }
 
         [HttpPost("{format}")]
-        public async Task<IActionResult> Convert([FromRoute] string format, [FromForm] FormRequest request)
+        public async Task<IActionResult> Convert([FromRoute] string format, [FromForm] ConversionViewModel request)
         {
             if (request.IsInvalid())
                 return BadRequest(request.Status);

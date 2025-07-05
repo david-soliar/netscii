@@ -8,53 +8,24 @@ using System;
 namespace netscii.Controllers
 {
     [Route("rtf")]
-    public class RTFController : Controller
+    public class RTFController : BaseController
     {
-        private readonly NetsciiContext _context;
-        private readonly IConversionService _rtfConversionService;
-
-        public RTFController(IRTFConversionService rtfConversionService, NetsciiContext context)
-        {
-            _rtfConversionService = rtfConversionService;
-            _context = context;
-        }
+        public RTFController(IRTFConversionService conversionService, NetsciiContext context)
+            : base(conversionService, context) { }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public override async Task<IActionResult> Index()
         {
             var fontsFromDb = await _context.Fonts
                                   .Where(f => f.Format == "HTML")
                                   .Select(f => f.Name)
                                   .ToListAsync();
-
-            ViewBag.Fonts = fontsFromDb;
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Index([FromForm] FormRequest request)
-        {
-            if (request.IsInvalid())
-                return BadRequest(request.Status);
-
-            var result = await _rtfConversionService.ConvertAsync(request);
-
-            ViewBag.Characters = request.Characters;
-            ViewBag.Scale = request.Scale;
-            ViewBag.Invert = request.Invert;
-            ViewBag.Result = result;
-            ViewBag.Background = request.Background ?? "#FFFFFF";
-            ViewBag.UseBackgroundColor = request.UseBackgroundColor;
-            ViewBag.Font = request.Font;
-
-            var fontsFromDb = await _context.Fonts
-                      .Where(f => f.Format == "HTML")
-                      .Select(f => f.Name)
-                      .ToListAsync();
-
-            ViewBag.Fonts = fontsFromDb;
-
-            return View();
+            var model = new ConversionViewModel
+            {
+                Controller = "RTF",
+                Fonts = fontsFromDb
+            };
+            return View(model);
         }
     }
 }

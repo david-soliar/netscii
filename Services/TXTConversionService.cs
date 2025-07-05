@@ -7,7 +7,7 @@ namespace netscii.Services
     {
         public string FormatName => "txt";
 
-        public Task<string> ConvertAsync(FormRequest request)
+        public Task<string> ConvertAsync(ConversionViewModel request)
         {
             return Task.Run(() =>
             {

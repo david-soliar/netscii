@@ -5,7 +5,7 @@ namespace netscii.Services.Interfaces
     public interface IConversionService
     {
         string FormatName { get; }
-        Task<string> ConvertAsync(FormRequest request);
+        Task<string> ConvertAsync(ConversionViewModel request);
     }
 
     public interface IHTMLConversionService : IConversionService { }
