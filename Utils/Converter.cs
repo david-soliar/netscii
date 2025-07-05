@@ -1,9 +1,6 @@
-﻿using Microsoft.Extensions.Primitives;
-using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
-using System;
-using System.IO.Pipelines;
 using System.Text;
 
 
