@@ -22,8 +22,11 @@ namespace netscii.Controllers
                                   .ToListAsync();
             var model = new ConversionViewModel
             {
-                Controller = "TXT", Fonts = fontsFromDb
+                Controller = "TXT", 
+                Fonts = fontsFromDb
             };
+            model.Font = fontsFromDb.FirstOrDefault(string.Empty);
+
             return View(model);
         }
     }

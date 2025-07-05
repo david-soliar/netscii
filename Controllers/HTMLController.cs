@@ -25,6 +25,8 @@ namespace netscii.Controllers
                 Controller = "HTML",
                 Fonts = fontsFromDb
             };
+            model.Font = fontsFromDb.FirstOrDefault(string.Empty);
+
             return View(model);
         }
     }

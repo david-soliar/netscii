@@ -26,6 +26,8 @@ namespace netscii.Controllers
                 Controller = "LATEX",
                 Fonts = fontsFromDb
             };
+            model.Font = fontsFromDb.FirstOrDefault(string.Empty);
+
             return View(model);
         }
     }
