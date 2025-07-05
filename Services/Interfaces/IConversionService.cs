@@ -13,4 +13,5 @@ namespace netscii.Services.Interfaces
     public interface IANSIConversionService : IConversionService { }
     public interface ILATEXConversionService : IConversionService { }
     public interface IRTFConversionService : IConversionService { }
+    public interface IEMOJIConversionService : IConversionService { }
 }

@@ -402,6 +402,46 @@ namespace netscii.Utils
             return head.ToString();
         }
 
+        public static string EMOJI(Stream imageStream, string characters, int scale, bool invert)
+        {
+            var text = new StringBuilder();
+
+            using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
+
+            var memoryGroup = image.GetPixelMemoryGroup();
+
+            var pixelMemory = memoryGroup[0];
+            var pixels = pixelMemory.Span;
+
+            int width = image.Width;
+            int height = image.Height;
+
+            for (int y = 0; y < height; y += scale)
+            {
+                for (int x = 0; x < width; x += scale)
+                {
+                    int index = y * width + x;
+
+                    Rgba32 pixel = pixels[index];
+
+                    if (invert)
+                    {
+                        pixel = new Rgba32(
+                            (byte)(255 - pixel.R),
+                            (byte)(255 - pixel.G),
+                            (byte)(255 - pixel.B),
+                            pixel.A
+                        );
+                    }
+
+                    text.Append(ClosestEmoji(pixel.R, pixel.G, pixel.B));
+                }
+                text.AppendLine("\n");
+            }
+
+            return text.ToString();
+        }
+
         private static string ClosestEmoji(int r, int g, int b)
         {
             var emojiPalette = new Dictionary<string, (int R, int G, int B)>
