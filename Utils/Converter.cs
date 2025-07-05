@@ -442,6 +442,59 @@ namespace netscii.Utils
             return text.ToString();
         }
 
+        public static string TXT(Stream imageStream, string characters, int scale, bool invert)
+        {
+            var text = new StringBuilder();
+
+            using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
+
+            var memoryGroup = image.GetPixelMemoryGroup();
+
+            var pixelMemory = memoryGroup[0];
+            var pixels = pixelMemory.Span;
+
+            int width = image.Width;
+            int height = image.Height;
+
+            for (int y = 0; y < height; y += (scale*2))
+            {
+                for (int x = 0; x < width;)
+                {
+                    int initialX = x;
+                    int index = y * width;
+
+                    Rgba32 pixel = pixels[index + x];
+
+                    x += scale;
+                    while (x < width && pixel.Equals(pixels[index + x]))
+                        x += scale;
+
+                    int brightness = (pixel.R + pixel.G + pixel.B) / 3;
+                    if (invert)
+                        brightness = 255 - brightness;
+
+                    int charIndex = brightness * (characters.Length - 1) / 255;
+
+                    int count = (x - initialX) / scale;
+                    count *= 2;
+
+                    text.Append(count > 1 ? new string(characters[charIndex], count) : characters[charIndex]);
+                }
+                text.Append("\n");
+            }
+
+            // Widths [4.4453 .. 4.4453]:  !,./:;I[\]t
+            // Widths [5.3281 .. 5.3438]: ()-`r{}
+            // Widths [8.0000 .. 8.0000]: Jcksvxyz
+            // Widths [8.8984 .. 8.8984]: #$023456789?Labdeghnopqu_                 //toto pre compatibility mode (ked to nie je monospace font, napr arial)
+            // Widths [9.3438 .. 9.3438]: +<=>~
+            // Widths [9.7734 .. 9.7734]: FTZ
+            // Widths [10.6719 .. 10.6719]: &ABEKPSVXY
+            // Widths [11.5547 .. 11.5547]: CDHNRUw
+
+            return text.ToString();
+        }
+
         private static string ClosestEmoji(int r, int g, int b)
         {
             var emojiPalette = new Dictionary<string, (int R, int G, int B)>

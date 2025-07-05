@@ -14,6 +14,7 @@ builder.Services.AddSingleton<IANSIConversionService, ANSIConversionService>();
 builder.Services.AddSingleton<ILATEXConversionService, LATEXConversionService>();
 builder.Services.AddSingleton<IRTFConversionService, RTFConversionService>();
 builder.Services.AddSingleton<IEMOJIConversionService, EMOJIConversionService>();
+builder.Services.AddSingleton<ITXTConversionService, TXTConversionService>();
 
 builder.Services.AddDbContext<NetsciiContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -47,5 +48,3 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
-
-//add ASCII classic, XLSX, BDF
