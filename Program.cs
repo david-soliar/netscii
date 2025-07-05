@@ -47,4 +47,4 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-//add SVG EMOJI
+//add EMOJI, ASCII classic, XLSX, BDF

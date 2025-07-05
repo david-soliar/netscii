@@ -1,7 +1,7 @@
 ﻿@using System.Linq
 
 @{
-    ViewData["Title"] = "Convert image to HTML";
+    ViewData["Title"] = "Convert image to RTF";
 
     var fonts = ViewBag.Fonts as List<string> ?? new List<string> { "Courier New", "Consolas", "Monospace" };
     string selectedBackground = ViewBag.Background ?? "#FFFFFF";
@@ -12,9 +12,9 @@
     bool useBackgroundColor = ViewBag.UseBackgroundColor ?? false;
 }
 
-<h2 class="mb-4">Convert Image to HTML</h2>
+<h2 class="mb-4">Convert Image to RTF</h2>
 
-<form method="post" enctype="multipart/form-data" asp-controller="HTML" asp-action="Index" class="row g-3">
+<form method="post" enctype="multipart/form-data" asp-controller="RTF" asp-action="Index" class="row g-3">
     <div class="col-md-6">
         <label for="image" class="form-label">Select Image:</label>
         <input type="file" id="image" name="image" accept="image/*" class="form-control" required />
@@ -73,6 +73,6 @@
     </div>
 </form>
 
-<h3 class="mt-5">Generated HTML Art:</h3>
+<h3 class="mt-5">Generated RTF Art:</h3>
 
 <div id="result" class="rounded p-3 bg-body text-body w-100 border border-primary" style="min-height: 100px;">@if (ViewBag.Result != null) { @Html.Raw(ViewBag.Result) }</div>

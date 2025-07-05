@@ -80,9 +80,4 @@
 
 <h3 class="mt-5">Generated HTML Art:</h3>
 
-<div id="result" class="rounded p-3 bg-body text-body w-100 border border-primary" style="min-height: 100px;">
-    @if (ViewBag.Result != null)
-    {
-        @Html.Raw(ViewBag.Result)
-    }
-</div>
+<div id="result" class="rounded p-3 bg-body text-body w-100 border border-primary" style="min-height: 100px;">@if (ViewBag.Result != null) { @Html.Raw(ViewBag.Result) }</div>

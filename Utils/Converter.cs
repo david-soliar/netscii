@@ -3,6 +3,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
+using System.IO.Pipelines;
 using System.Text;
 
 
@@ -329,8 +330,110 @@ namespace netscii.Utils
 
         public static string RTF(Stream imageStream, string characters, int scale, bool invert, string font, string background, bool useBackgroundColor)
         {
-            // Your RTF conversion logic here
-            return HTML(imageStream, characters, scale, invert, font, background, useBackgroundColor);
+            var head = new StringBuilder();
+            var text = new StringBuilder();
+            var definedColors = new List<Rgba32>();
+
+            using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
+
+            var memoryGroup = image.GetPixelMemoryGroup();
+
+            var pixelMemory = memoryGroup[0];
+            var pixels = pixelMemory.Span;
+
+            int width = image.Width;
+            int height = image.Height;
+
+            for (int y = 0; y < height; y += scale)
+            {
+                for (int x = 0; x < width; x += scale)
+                {
+                    int index = y * width + x;
+
+                    Rgba32 pixel = pixels[index];
+
+                    int brightness = (pixel.R + pixel.G + pixel.B) / 3;
+                    if (invert)
+                        brightness = 255 - brightness;
+
+                    int charIndex = brightness * (characters.Length - 1) / 255;
+
+                    if (!definedColors.Contains(pixel))
+                    {
+                        definedColors.Add(pixel);
+                    }
+                    int indexOfColor = definedColors.IndexOf(pixel);
+                    text.Append($"\\cf{indexOfColor + 1} {characters[charIndex]}");
+                }
+                text.AppendLine("\\line");
+            }
+
+            head.AppendLine("{\\rtf1\\ansi\\deff0");
+            head.Append("{\\fonttbl{\\f0\\fmodern\\fcharset0 Consolas;}}\n");
+            head.Append("{\\colortbl ;");
+            foreach (var item in definedColors)
+            {
+                head.Append($"\\red{item.R}\\green{item.G}\\blue{item.B};");
+            }
+            Rgba32 bg = new Rgba32();
+            if (useBackgroundColor)
+            {
+                var (r, g, b) = HexToRGB("#FFAA33");
+                bg = new Rgba32(r, g, b);
+                if (!definedColors.Contains(bg))
+                {
+                    definedColors.Add(bg);
+                }
+
+            }
+
+            head.Append("}\n");
+
+            if (useBackgroundColor)
+            {
+                int indexOfBg = definedColors.IndexOf(bg);
+                head.AppendLine($"\\highlight{indexOfBg + 1} ");
+            }
+
+            head.Append("\\f0\\sl100\\slmult1\n");
+            head.Append(text);
+
+            head.Append("}");
+            return head.ToString();
+        }
+
+        private static string ClosestEmoji(int r, int g, int b)
+        {
+            var emojiPalette = new Dictionary<string, (int R, int G, int B)>
+            {
+                ["\U0001F7E5"] = (209, 34, 41),         // Red
+                ["\U0001F7E7"] = (255, 139, 0),         // Orange
+                ["\U0001F7E8"] = (255, 205, 0),         // Yellow
+                ["\U0001F7E9"] = (0, 135, 62),          // Green
+                ["\U0001F7EB"] = (0, 102, 204),         // Blue
+                ["\U0001F7EA"] = (128, 0, 128),         // Purple
+                ["\u2B1C"]     = (255, 255, 255),       // White
+                ["\u2B1B"]     = (0, 0, 0)              // Black
+            };
+
+            return emojiPalette
+                .OrderBy(e => Math.Pow(r - e.Value.R, 2) + Math.Pow(g - e.Value.G, 2) + Math.Pow(b - e.Value.B, 2))
+                .First().Key;
+        }
+
+        private static (int R, int G, int B) HexToRGB(string hex)
+        {
+            if (hex.StartsWith("#"))
+                hex = hex.Substring(1);
+
+            if (hex.Length != 6)
+                throw new ArgumentException("Hex color must be 6 characters (e.g. #FFAABB)");
+
+            int r = System.Convert.ToInt32(hex.Substring(0, 2), 16);
+            int g = System.Convert.ToInt32(hex.Substring(2, 2), 16);
+            int b = System.Convert.ToInt32(hex.Substring(4, 2), 16);
+
+            return (r, g, b);
         }
     }
 }

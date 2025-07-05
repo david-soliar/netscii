@@ -32,6 +32,9 @@
                         <li class="nav-item">
                             <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "SVG") ? "active" : "")" asp-controller="SVG" asp-action="Index">.svg</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "RTF") ? "active" : "")" asp-controller="RTF" asp-action="Index">.rtf</a>
+                        </li>
                     </ul>
                     <button id="themeToggle" class="btn btn-outline-secondary" type="button" aria-label="Toggle dark/light theme">
                         🌙 Dark
