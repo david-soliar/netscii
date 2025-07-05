@@ -17,11 +17,17 @@ namespace netscii.Controllers
         [HttpGet]
         public override async Task<IActionResult> Index()
         {
-            // tu z db OS ktore viem spravit
+            var operatingSystemsFromDb = await _context.OperatingSystems
+                                  .Select(f => f.Name)
+                                  .ToListAsync();
+
             var model = new ConversionViewModel
             {
-                Controller = "ANSI"
+                Controller = "ANSI",
+                OperatingSystems = operatingSystemsFromDb
             };
+            model.OperatingSystem = operatingSystemsFromDb.FirstOrDefault(string.Empty);
+
             return View(model);
         }
     }

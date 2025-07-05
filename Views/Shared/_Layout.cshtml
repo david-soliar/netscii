@@ -1,10 +1,19 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var items = Context.Items;
+    var title = items["netscii.Title"] as string ?? ViewData["Title"] ?? "";
+    var injectedScripts = items["netscii.InjectedScripts"] as string ?? "";
+    var injectedStyles = items["netscii.InjectedStyles"] as string ?? "";
+}
+
+<!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@ViewData["Title"] - netscii</title>
+    <title>@title - netscii</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    @Html.Raw(injectedStyles)
 </head>
 <body class="d-flex flex-column min-vh-100">
     <header>
@@ -21,25 +30,25 @@
                             <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "Home") ? "active" : "")" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "TXT") ? "active" : "")" asp-controller="TXT" asp-action="Index">.txt</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "HTML") ? "active" : "")" asp-controller="HTML" asp-action="Index">.html</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "LATEX") ? "active" : "")" asp-controller="LATEX" asp-action="Index">.tex</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "ANSI") ? "active" : "")" asp-controller="ANSI" asp-action="Index">.ansi</a>
+                            <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "RTF") ? "active" : "")" asp-controller="RTF" asp-action="Index">.rtf</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "SVG") ? "active" : "")" asp-controller="SVG" asp-action="Index">.svg</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "RTF") ? "active" : "")" asp-controller="RTF" asp-action="Index">.rtf</a>
+                            <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "ANSI") ? "active" : "")" asp-controller="ANSI" asp-action="Index">.ansi</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "EMOJI") ? "active" : "")" asp-controller="EMOJI" asp-action="Index">.emoji</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @((ViewContext.RouteData.Values["controller"]?.ToString() == "TXT") ? "active" : "")" asp-controller="TXT" asp-action="Index">.txt</a>
                         </li>
                     </ul>
                     <button id="themeToggle" class="btn btn-outline-secondary" type="button" aria-label="Toggle dark/light theme">
@@ -63,6 +72,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    @Html.Raw(injectedScripts)
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

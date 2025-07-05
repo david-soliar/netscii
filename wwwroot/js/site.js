@@ -23,5 +23,7 @@
     }
 });
 
-
-//pridat init vals do Modelu a aj do DB pre napr OS, cez js nech sa nie vsetky inputy zobrazuju
+function hideContainer(container) {
+    const element = document.querySelector(`#${container}-container`);
+    element.style.display = 'none';
+}

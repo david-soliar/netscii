@@ -23,7 +23,8 @@ namespace netscii.Controllers
             var model = new ConversionViewModel
             {
                 Controller = "HTML",
-                Fonts = fontsFromDb
+                Fonts = fontsFromDb,
+                Characters = "%#*+=-:."
             };
             model.Font = fontsFromDb.FirstOrDefault(string.Empty);
 

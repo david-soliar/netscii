@@ -17,13 +17,14 @@ namespace netscii.Controllers
         public override async Task<IActionResult> Index()
         {
             var fontsFromDb = await _context.Fonts
-                                  .Where(f => f.Format == "HTML")
+                                  .Where(f => f.Format == "SVG")
                                   .Select(f => f.Name)
                                   .ToListAsync();
             var model = new ConversionViewModel
             {
-                Controller = "TXT", 
-                Fonts = fontsFromDb
+                Controller = "SVG", 
+                Fonts = fontsFromDb,
+                Characters = "%#*+=-:."
             };
             model.Font = fontsFromDb.FirstOrDefault(string.Empty);
 

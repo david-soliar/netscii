@@ -18,13 +18,14 @@ namespace netscii.Controllers
         public override async Task<IActionResult> Index()
         {
             var fontsFromDb = await _context.Fonts
-                                  .Where(f => f.Format == "HTML") // toto do DB managera
+                                  .Where(f => f.Format == "LATEX") // toto do DB managera
                                   .Select(f => f.Name)
                                   .ToListAsync();
             var model = new ConversionViewModel
             {
                 Controller = "LATEX",
-                Fonts = fontsFromDb
+                Fonts = fontsFromDb,
+                Characters = "MNHUCIi;,."
             };
             model.Font = fontsFromDb.FirstOrDefault(string.Empty);
 

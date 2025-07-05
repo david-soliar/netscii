@@ -18,7 +18,8 @@ namespace netscii.Controllers
         {
             var model = new ConversionViewModel
             {
-                Controller = "TXT"
+                Controller = "TXT",
+                Characters = "#$023456789?Labdeghnopqu_"
             };
             return View(model);
         }

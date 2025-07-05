@@ -2,46 +2,45 @@
 @using System.Linq
 @{
     var format = Model.Controller ?? "Format";
-    ViewData["Title"] = $"Convert image to {format}";
 }
 
 
 <h2 class="mb-4">Convert Image to @format</h2>
 
 <form method="post" enctype="multipart/form-data" asp-controller="@format" asp-action="Index" class="row g-3">
-    <div class="col-md-6">
+    <div id="image-container" class="col-md-6">
         <label for="image" class="form-label">Select Image:</label>
         <input type="file" id="image" name="image" accept="image/*" class="form-control" required />
     </div>
 
-    <div class="col-md-6">
+    <div id="characters-container" class="col-md-6">
         <label for="characters" class="form-label">Characters:</label>
         <input type="text" id="characters" name="characters" value="@Model.Characters" class="form-control" />
         <div class="form-text">Characters used for conversion</div>
     </div>
 
-    <div class="col-md-4">
+    <div id="scale-container" class="col-md-4">
         <label for="scale" class="form-label">Scale (e.g., 8):</label>
         <input type="number" id="scale" name="scale" min="1" value="@Model.Scale" class="form-control" />
     </div>
 
     <div class="col-md-4">
         <label class="form-label d-block">Options:</label>
-        <div class="form-check">
+        <div id="invert-container" class="form-check">
             <input type="checkbox" id="invert" name="invert" class="form-check-input" value="true" @(Model.Invert ? "checked" : "") />
             <label for="invert" class="form-check-label">Invert colors</label>
         </div>
-        <div class="form-check">
+        <div id="create-full-document-container" class="form-check">
             <input type="checkbox" id="createFullDocument" name="createFullDocument" class="form-check-input" value="true" @(Model.CreateFullDocument ? "checked" : "") />
             <label for="createFullDocument" class="form-check-label">Generate full document code</label>
         </div>
-        <div class="form-check">
+        <div id="use-small-palette-container" class="form-check">
             <input type="checkbox" id="useSmallPalette" name="useSmallPalette" class="form-check-input" value="true" @(Model.UseSmallPalette ? "checked" : "") />
             <label for="useSmallPalette" class="form-check-label">Use 256 colors (old systems)</label>
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div id="background-container" class="col-md-4">
         <label for="background" class="form-label">
             Background Color: (<span id="colorValueDisplay" style="font-weight: normal;"></span>)
         </label>
@@ -54,29 +53,33 @@
     </div>
 
     <div class="col-md-6">
-        <label for="font" class="form-label">Font:</label>
-        <select id="font" name="font" class="form-select">
-            @foreach (var font in Model.Fonts)
-            {
-                <option style="font-family: @font;" value="@font" selected="@(font == Model.Font ? "selected" : null)">@font</option>
-            }
-        </select>
+        <div id="font-container">
+            <label for="font" class="form-label">Font:</label>
+            <select id="font" name="font" class="form-select">
+                @foreach (var font in Model.Fonts)
+                {
+                    <option style="font-family: @font;" value="@font" selected="@(font == Model.Font ? "selected" : null)">@font</option>
+                }
+            </select>
+        </div>
 
-        <label for="operatingSystem" class="form-label">Target Operating System:</label>
-        <select id="operatingSystem" name="operatingSystem" class="form-select">
-            @foreach (var operatingSystem in Model.OperatingSystems)
-            {
-                <option value="@operatingSystem" selected="@(operatingSystem == Model.OperatingSystem ? "selected" : null)">@operatingSystem</option>
-            }
-        </select>
+        <div id="operating-system-container">
+            <label for="operatingSystem" class="form-label">Target Operating System:</label>
+            <select id="operatingSystem" name="operatingSystem" class="form-select">
+                @foreach (var operatingSystem in Model.OperatingSystems)
+                {
+                    <option value="@operatingSystem" selected="@(operatingSystem == Model.OperatingSystem ? "selected" : null)">@operatingSystem</option>
+                }
+            </select>
+        </div>
     </div>
 
     <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
-        <button type="submit" class="btn btn-primary">Convert</button>
-        <button type="button" class="btn btn-outline-secondary" onclick="copyToClipboard()">Copy</button>
-        @if (ViewBag.Result != null)
+        <button type="submit" class="btn btn-primary btn-click-effect btn-conversion-form">Convert</button>
+        <button type="button" class="btn btn-light btn-click-effect btn-conversion-form" onclick="copyToClipboard(this, 'Copied')">Copy</button>
+        @if (Model.Result != null && Model.Result.Length > 0)
         {
-            <button type="button" class="btn btn-success mt-3" onclick="openResultInNewTab()">
+            <button type="button" class="btn btn-success mt-3 btn-click-effect btn-conversion-form" onclick="openResultInNewTab()">
                 Open Result in New Tab
             </button>
         }
@@ -85,8 +88,4 @@
 
 <h3 class="mt-5">Generated @format:</h3>
 
-<div id="result" class="rounded p-3 bg-body text-body w-100 border border-primary" style="min-height: 100px;">@if (Model.Result != null){ @Html.Raw(Model.Result) }</div>
-
-@section Scripts {
-    <script src="~/js/converter-buttons.js"></script>
-}
+<div id="result-container" class="rounded p-3 bg-body text-body w-100 border border-primary">@if (Model.Result != null){ @Html.Raw(Model.Result) }</div>

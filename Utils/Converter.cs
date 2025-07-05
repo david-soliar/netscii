@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using Microsoft.Extensions.Primitives;
+using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Text;
@@ -138,6 +139,7 @@ namespace netscii.Utils
             {
                 document.AppendLine("\\documentclass{article}");
                 document.AppendLine("\\usepackage{xcolor}");
+                document.AppendLine($"\\usepackage{{{font}}}");
                 document.AppendLine("\\linespread{0}");
             }
             if (useBackgroundColor)
@@ -184,23 +186,23 @@ namespace netscii.Utils
 
             string escape = operatingSystem switch
             {
-                "Windows" => "$([char]27)",
-                "Linux/Mac" => "\\e",
+                "Windows Terminal/Powershell" => "$([char]27)",
+                "Mac/Linux Shell" => "\\e",
                 _ => string.Empty
             };
 
             string newLine = operatingSystem switch
             {
-                "Windows" => "`n",
-                "Linux/Mac" => "\\n",
+                "Windows Terminal/Powershell" => "`n",
+                "Mac/Linux Shell" => "\\n",
                 _ => string.Empty
             };
 
-            if (operatingSystem == "Windows")
+            if (operatingSystem == "Windows Terminal/Powershell")
             {
                 sb.Append("Write-Host \"");
             }
-            else if (operatingSystem == "Linux/Mac")
+            else if (operatingSystem == "Mac/Linux Shell")
             {
                 sb.Append("printf \"");
             }
@@ -366,7 +368,9 @@ namespace netscii.Utils
             }
 
             head.AppendLine("{\\rtf1\\ansi\\deff0");
-            head.Append("{\\fonttbl{\\f0\\fmodern\\fcharset0 Consolas;}}\n");
+            head.Append("{\\fonttbl{\\f0");
+            head.Append(font);
+            head.Append(";}}\\n");
             head.Append("{\\colortbl ;");
             foreach (var item in definedColors)
             {
@@ -392,14 +396,14 @@ namespace netscii.Utils
                 head.AppendLine($"\\highlight{indexOfBg + 1} ");
             }
 
-            head.Append("\\f0\\sl100\\slmult1\n");
+            head.Append("\\f0\\sl200\\slmult1\n");
             head.Append(text);
 
             head.Append("}");
             return head.ToString();
         }
 
-        public static string EMOJI(Stream imageStream, string characters, int scale, bool invert)
+        public static string EMOJI(Stream imageStream, int scale, bool invert)
         {
             var text = new StringBuilder();
 
@@ -479,15 +483,6 @@ namespace netscii.Utils
                 }
                 text.Append("\n");
             }
-
-            // Widths [4.4453 .. 4.4453]:  !,./:;I[\]t
-            // Widths [5.3281 .. 5.3438]: ()-`r{}
-            // Widths [8.0000 .. 8.0000]: Jcksvxyz
-            // Widths [8.8984 .. 8.8984]: #$023456789?Labdeghnopqu_                 //toto pre compatibility mode (ked to nie je monospace font, napr arial)
-            // Widths [9.3438 .. 9.3438]: +<=>~
-            // Widths [9.7734 .. 9.7734]: FTZ
-            // Widths [10.6719 .. 10.6719]: &ABEKPSVXY
-            // Widths [11.5547 .. 11.5547]: CDHNRUw
 
             return text.ToString();
         }

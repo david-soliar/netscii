@@ -1,0 +1,9 @@
+﻿#result-container {
+    min-height: 100px;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.btn-conversion-form {
+    min-width: 12ch;
+}

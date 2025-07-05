@@ -14,7 +14,6 @@ namespace netscii.Services
                 using var stream = request.GetImageStream();
                 return Utils.Converter.EMOJI(
                     stream,
-                    request.Characters,
                     request.Scale,
                     request.Invert);
             });

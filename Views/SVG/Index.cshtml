@@ -1,3 +1,13 @@
 ﻿@model netscii.Models.ConversionViewModel
 
-@await Html.PartialAsync("_ConversionIndex", Model)
+@await Component.InvokeAsync("ConversionForm", new { model = Model })
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            hideContainer("create-full-document");
+            hideContainer("use-small-palette");
+            hideContainer("operating-system");
+        });
+    </script>
+}
