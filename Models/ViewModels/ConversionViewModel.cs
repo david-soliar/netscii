@@ -1,4 +1,4 @@
-﻿namespace netscii.Models
+﻿namespace netscii.Models.ViewModels
 {
     public class ConversionViewModel
     {

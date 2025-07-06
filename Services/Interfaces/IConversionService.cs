@@ -1,4 +1,4 @@
-﻿using netscii.Models;
+﻿using netscii.Models.ViewModels;
 
 namespace netscii.Services.Interfaces
 {

@@ -1,24 +1,34 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using netscii.Models;
+using netscii.Models.ViewModels;
 using netscii.Services.Interfaces;
 
 
-namespace netscii.Controllers
+namespace netscii.Controllers.Web
 {
     public abstract class BaseController : Controller
     {
-        protected readonly NetsciiContext _context;
         protected readonly IConversionService _conversionService;
+        protected readonly IConversionViewModelFactory _viewModelFactory;
 
-        public BaseController(IConversionService conversionService, NetsciiContext context)
+        public BaseController(IConversionService conversionService, IConversionViewModelFactory viewModelFactory)
         {
             _conversionService = conversionService;
-            _context = context;
+            _viewModelFactory = viewModelFactory;
         }
 
         [HttpGet]
         public virtual async Task<IActionResult> Index()
         {
+            string? format = ControllerContext.RouteData.Values["controller"]?.ToString();
+
+            if (string.IsNullOrWhiteSpace(format))
+            {
+                ViewBag.ErrorMessage = "Unable to determine format from the route.";
+                return View("Error"); // asi skor aj status
+            }
+
+            await _viewModelFactory.CreateWithDefaults(format.ToLowerInvariant());
             return View();
         }
 

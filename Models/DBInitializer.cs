@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using netscii.Models.Entities;
 
 namespace netscii.Models
 {
@@ -80,8 +80,8 @@ namespace netscii.Models
                 {
                     var operatingSystems = new[]
                     {
-                        new OperatingSystem { Name = "Windows Terminal/Powershell" }, // toto nejako lepsie pomenovat
-                        new OperatingSystem { Name = "Mac/Linux Shell" }
+                        new Entities.OperatingSystem { Name = "Windows Terminal/Powershell" }, // toto nejako lepsie pomenovat
+                        new Entities.OperatingSystem { Name = "Mac/Linux Shell" }
                     };
                     context.OperatingSystems.AddRange(operatingSystems);
                 }

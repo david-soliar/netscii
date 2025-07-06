@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using netscii.Models;
+using netscii.Models.ViewModels;
 
 namespace netscii.ViewComponents
 {

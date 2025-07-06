@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using netscii.Models;
+using netscii.Models.ViewModels;
 using netscii.Services.Interfaces;
 
-namespace netscii.Controllers
+namespace netscii.Controllers.Api
 {
     [ApiController]
     [Route("api/")]
@@ -21,24 +22,18 @@ namespace netscii.Controllers
         public async Task<IActionResult> Convert([FromRoute] string format, [FromForm] ConversionViewModel request)
         {
             if (request.IsInvalid())
-                return BadRequest(request.Status);
+                return BadRequest(new { error = request.Status });
 
             if (!_conversionServices.TryGetValue(format.ToLowerInvariant(), out var service))
-                return BadRequest("Unsupported format");
+                return BadRequest(new { error = "Unsupported format" });
 
             var result = await service.ConvertAsync(request);
 
-            string contentType = format.ToLowerInvariant() switch
+            return Ok(new
             {
-                "html" => "text/html",
-                "svg" => "text/markdown", //toto zmenit
-                "ansi" => "text/plain",
-                "latex" => "application/x-latex",
-                "rtf" => "application/rtf",
-                _ => "text/plain"
-            };
-
-            return Content(result, contentType);
+                format,
+                content = result
+            });
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Net;
+using netscii.Models.Entities;
+
 
 namespace netscii.Models
 {
@@ -13,13 +13,13 @@ namespace netscii.Models
 
         public DbSet<Color> Colors { get; set; }
         public DbSet<Font> Fonts { get; set; }
-        public DbSet<OperatingSystem> OperatingSystems { get; set; }
+        public DbSet<Entities.OperatingSystem> OperatingSystems { get; set; }
 
         protected override void OnModelCreating(ModelBuilder mb)
         {
             mb.Entity<Color>().Property(p => p.Hex).IsRequired();
             mb.Entity<Font>().Property(p => p.Name).IsRequired();
-            mb.Entity<OperatingSystem>().Property(p => p.Name).IsRequired();
+            mb.Entity<Entities.OperatingSystem>().Property(p => p.Name).IsRequired();
         }
     }
 }

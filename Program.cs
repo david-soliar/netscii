@@ -1,6 +1,9 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using netscii.Models;
 using netscii.Services;
+using netscii.Services.Factories;
 using netscii.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +21,14 @@ builder.Services.AddSingleton<ITXTConversionService, TXTConversionService>();
 
 builder.Services.AddDbContext<NetsciiContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IConversionViewModelFactory, ConversionViewModelFactory>();
+
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+});
 
 
 var app = builder.Build();

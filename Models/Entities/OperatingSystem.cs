@@ -1,4 +1,4 @@
-﻿namespace netscii.Models
+﻿namespace netscii.Models.Entities
 {
     public class OperatingSystem
     {
