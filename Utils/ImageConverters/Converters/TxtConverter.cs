@@ -1,0 +1,65 @@
+﻿using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
+using System.Text;
+using netscii.Utils.ImageConverters.Models;
+using SixLabors.ImageSharp.Advanced;
+
+
+namespace netscii.Utils.ImageConverters.Converters
+{
+    public static class TxtConverter
+    {
+        public static string Convert(Stream imageStream, ConverterOptions options)
+        {
+            using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
+
+            int width = image.Width;
+            int height = image.Height;
+
+
+            if (image == null)
+                throw new ArgumentNullException("Could not load the image.");
+
+            if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
+                throw new ArgumentOutOfRangeException("Scale must be greater than zero and smaller than width and height of the image.");
+
+
+            if (string.IsNullOrEmpty(options.Characters))
+                options.Characters = "Aa";
+
+
+            var text = new StringBuilder();
+
+            var memoryGroup = image.GetPixelMemoryGroup();
+
+            var pixelMemory = memoryGroup[0];
+            var pixels = pixelMemory.Span;
+
+            for (int y = 0; y < height; y += (options.Scale * 2))
+            {
+                for (int x = 0; x < width;)
+                {
+                    int initialX = x;
+                    int index = y * width;
+
+                    Rgba32 pixel = pixels[index + x];
+                    if (options.Invert)
+                        pixel = ConverterHelpers.InvertPixel(pixel);
+
+                    x += options.Scale;
+                    while (x < width && pixel.Equals(pixels[index + x]))
+                        x += options.Scale;
+
+                    int count = (x - initialX) / options.Scale * 2;
+
+                    int charIndex = ConverterHelpers.GetCharIndex(pixel, options.Characters.Length);
+
+                    text.Append(count > 1 ? new string(options.Characters[charIndex], count) : options.Characters[charIndex]);
+                }
+                text.Append("\n");
+            }
+
+            return text.ToString();
+        }
+    }
+}

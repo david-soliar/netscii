@@ -1,0 +1,104 @@
+﻿using Microsoft.Extensions.Primitives;
+using netscii.Utils.ImageConverters.Models;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Advanced;
+using SixLabors.ImageSharp.PixelFormats;
+using System.Text;
+
+
+namespace netscii.Utils.ImageConverters.Converters
+{
+    public static class HtmlConverter
+    {
+        public static string Convert(Stream imageStream, ConverterOptions options)
+        {
+            using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
+
+            int width = image.Width;
+            int height = image.Height;
+
+
+            if (image == null)
+                throw new ArgumentNullException("Could not load the image.");
+
+            if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
+                throw new ArgumentOutOfRangeException("Scale must be greater than zero and smaller than width and height of the image.");
+
+
+            if (string.IsNullOrEmpty(options.Characters))
+                options.Characters = "Aa";
+
+            if (string.IsNullOrEmpty(options.Font))
+                options.Font = "monospace";
+
+
+            var css = new StringBuilder();
+            var html = new StringBuilder();
+
+            var memoryGroup = image.GetPixelMemoryGroup();
+
+            var pixelMemory = memoryGroup[0];
+            var pixels = pixelMemory.Span;
+
+            var definedColors = new HashSet<string>();
+
+            css.AppendFormat(
+                "<style>\n" +
+                "#netscii-html-result {{\n" +
+                "    line-height: 80%;\n" +
+                "    display: inline-block;\n" +
+                "    margin: 0 auto;\n" +
+                "    overflow: hidden;\n" +
+                "    overflow-x: auto;\n" +
+                "    font-family: {0};\n" +
+                "    background-color: {1};\n" +
+                "}}\n",
+                options.Font,
+                options.UseBackgroundColor ? options.Background : "transparent");
+
+
+            html.Append("<pre id=\"netscii-html-result\">\n");
+
+            for (int y = 0; y < height; y += options.Scale)
+            {
+                html.Append("\t");
+                for (int x = 0; x < width;)
+                {
+                    int initialX = x;
+                    int index = y * width;
+
+                    Rgba32 pixel = pixels[index + x];
+                    if (options.Invert)
+                        pixel = ConverterHelpers.InvertPixel(pixel);
+
+                    x += options.Scale;
+                    while (x < width && pixel.Equals(pixels[index + x]))
+                        x += options.Scale;
+
+                    int count = (x - initialX) / options.Scale;
+
+                    int charIndex = ConverterHelpers.GetCharIndex(pixel, options.Characters.Length);
+
+                    string hex = $"{pixel.R:X2}{pixel.G:X2}{pixel.B:X2}";
+                    string className = $"c{hex}";
+
+                    if (!definedColors.Contains(className))
+                    {
+                        css.AppendFormat(".{0} \n\t{{color: #{1};\n}}\n", className, hex);
+                        definedColors.Add(className);
+                    }
+
+                    html.AppendFormat("<span class='{0}'>", className);
+                    html.Append(count > 1 ? new string(options.Characters[charIndex], count) : options.Characters[charIndex]);
+                    html.Append("</span>");
+                }
+                html.Append("<br>\n");
+            }
+
+            css.Append("</style>");
+            html.Append("</pre>");
+
+            return css.Append(html).ToString();
+        }
+    }
+}
