@@ -1,4 +1,5 @@
-﻿using netscii.Utils.ImageConverters.Models;
+﻿using netscii.Utils.ImageConverters.Exceptions;
+using netscii.Utils.ImageConverters.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
@@ -18,10 +19,10 @@ namespace netscii.Utils.ImageConverters.Converters
 
 
             if (image == null)
-                throw new ArgumentNullException("Could not load the image.");
+                throw new ConverterException("Could not load the image.");
 
             if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
-                throw new ArgumentOutOfRangeException("Scale must be greater than zero and smaller than width and height of the image.");
+                throw new ConverterException("Scale must be greater than zero and smaller than width and height of the image.");
 
 
             if (string.IsNullOrEmpty(options.Characters))
