@@ -79,12 +79,12 @@
         </div>
     </div>
 
-    <div class="col-md-6 d-flex align-items-end justify-content-end gap-2">
+    <div class="col-md-6 d-flex flex-wrap align-items-end justify-content-end gap-2">
         <button type="submit" class="btn btn-primary btn-click-effect btn-conversion-form">Convert</button>
         <button type="button" class="btn btn-light btn-click-effect btn-conversion-form" onclick="copyToClipboard(this, 'Copied')">Copy</button>
         @if (Model.Result != null && Model.Result.Length > 0)
         {
-            <button type="button" class="btn btn-success mt-3 btn-click-effect btn-conversion-form" onclick="openResultInNewTab()">
+            <button type="button" class="btn btn-success btn-click-effect btn-conversion-form" onclick="openResultInNewTab()">
                 Open Result in New Tab
             </button>
         }

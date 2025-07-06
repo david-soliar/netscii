@@ -7,4 +7,5 @@
 
 .btn-conversion-form {
     min-width: 12ch;
+    white-space: nowrap;
 }

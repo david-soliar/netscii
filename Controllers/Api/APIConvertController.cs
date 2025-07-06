@@ -25,7 +25,8 @@ namespace netscii.Controllers.Api
                 return BadRequest(new { error = "Unsupported format" });
 
             var result = await _conversionService.ConvertAsync(format, request);
-
+            // JSON: width, height, processingTime, outputLength(bytes), format
+            // mData: result, resultType (latex, rtf), mimeType (text/plain...)
             return Ok(new
             {
                 format,
