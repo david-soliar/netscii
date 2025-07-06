@@ -1,37 +1,41 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using netscii.Models.ViewModels;
-using netscii.Services.Interfaces;
+using netscii.Services;
+using netscii.Utils.ImageConverters.Exceptions;
+
 
 namespace netscii.Controllers.Api
 {
     [ApiController]
-    [Route("api/")]
+    [Route("api/{format}")]
     public class ConvertApiController : Controller
     {
-        private readonly IConversionService _conversionService;
+        private readonly ConversionService _conversionService;
 
-        public ConvertApiController(IConversionService conversionService)
+        public ConvertApiController(ConversionService conversionService)
         {
             _conversionService = conversionService;
         }
 
-        [HttpPost("{format}")]
+        [HttpPost]
         public async Task<IActionResult> Convert([FromRoute] string format, [FromForm] ConversionViewModel request)
         {
-            if (request.IsInvalid())
-                return BadRequest(new { error = request.Status });
+            if (_conversionService.IsUnsupportedFormat(format))
+                return BadRequest(new ErrorViewModel { Code = 400, Message = "Unsupported format" });
 
-            if (!netscii.Constants.SupportedFormats.All.Contains(format))
-                return BadRequest(new { error = "Unsupported format" });
-
-            var result = await _conversionService.ConvertAsync(format, request);
-            // JSON: width, height, processingTime, outputLength(bytes), format
-            // mData: result, resultType (latex, rtf), mimeType (text/plain...)
-            return Ok(new
+            try
             {
-                format,
-                content = result
-            });
+                var result = await _conversionService.ConvertAsync(format, request);
+                return Ok(result);
+            }
+            catch (ConverterException ex)
+            {
+                return BadRequest(new ErrorViewModel { Code = 400, Message = ex.Message });
+            }
+            catch
+            {
+                return StatusCode(500, new ErrorViewModel { Code = 500, Message = "Internal server error" });
+            }
         }
     }
 }

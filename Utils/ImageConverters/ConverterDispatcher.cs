@@ -1,11 +1,14 @@
 ﻿using netscii.Utils.ImageConverters.Models;
 using netscii.Utils.ImageConverters.Converters;
+using netscii.Utils.ImageConverters.Exceptions;
+using System.Diagnostics;
+using System.Text;
 
 namespace netscii.Utils.ImageConverters
 {
     public static class ConverterDispatcher
     {
-        private static readonly Dictionary<string, Func<Stream, ConverterOptions, string>> _map =
+        public static readonly Dictionary<string, Func<Stream, ConverterOptions, ConverterResult>> Converters =
             new(StringComparer.OrdinalIgnoreCase)
             {
                 ["html"] = HtmlConverter.Convert,
@@ -17,12 +20,35 @@ namespace netscii.Utils.ImageConverters
                 ["emoji"] = EmojiConverter.Convert
             };
 
-        public static string Convert(string format, Stream stream, ConverterOptions options)
-        {
-            if (!_map.TryGetValue(format, out var converter))
-                throw new NotSupportedException($"Unsupported format: {format}");
+        public static readonly Dictionary<string, string> MimeTypes = 
+            new(StringComparer.OrdinalIgnoreCase)
+            {
+                { "html", "text/html" },
+                { "txt", "text/plain" },
+                { "latex", "text/x-latex" },
+                { "rtf", "application/rtf" },
+                { "svg", "image/svg+xml" },
+                { "ansi", "text/plain" },
+                { "emoji", "text/plain" }
+            };
 
-            return converter(stream, options);
+        public static ConverterResult Convert(string format, Stream stream, ConverterOptions options)
+        {
+            if (!Converters.TryGetValue(format, out var converter))
+                throw new ConverterException(ConverterErrorCode.UnsupportedFormat);
+
+            var stopwatch = Stopwatch.StartNew();
+
+            ConverterResult result = converter(stream, options);
+
+            stopwatch.Stop();
+
+            result.ProcessingTimeMs = stopwatch.ElapsedMilliseconds;
+            result.OutputLengthBytes = Encoding.UTF8.GetByteCount(result.Content);
+            result.MimeType = MimeTypes.TryGetValue(format, out var mt) ? mt : "application/x-unknown";
+            result.Format = format;
+
+            return result;
         }
     }
 }

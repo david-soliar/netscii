@@ -10,19 +10,21 @@ namespace netscii.Utils.ImageConverters.Converters
 {
     public static class TxtConverter
     {
-        public static string Convert(Stream imageStream, ConverterOptions options)
+        public static ConverterResult Convert(Stream imageStream, ConverterOptions options)
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
             int width = image.Width;
             int height = image.Height;
 
+            var result = new ConverterResult { Width = width, Height = height };
+
 
             if (image == null)
-                throw new ConverterException("Could not load the image.");
+                throw new ConverterException(ConverterErrorCode.ImageLoadFailed);
 
             if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
-                throw new ConverterException("Scale must be greater than zero and smaller than width and height of the image.");
+                throw new ConverterException(ConverterErrorCode.InvalidScale);
 
 
             if (string.IsNullOrEmpty(options.Characters))
@@ -60,7 +62,8 @@ namespace netscii.Utils.ImageConverters.Converters
                 text.Append("\n");
             }
 
-            return text.ToString();
+            result.Content = text.ToString();
+            return result;
         }
     }
 }

@@ -3,26 +3,28 @@ using netscii.Utils.ImageConverters.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
-using System;
 using System.Text;
+
 
 namespace netscii.Utils.ImageConverters.Converters
 {
     public static class LatexConverter
     {
-        public static string Convert(Stream imageStream, ConverterOptions options)
+        public static ConverterResult Convert(Stream imageStream, ConverterOptions options)
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
             int width = image.Width;
             int height = image.Height;
 
+            var result = new ConverterResult { Width = width, Height = height };
+
 
             if (image == null)
-                throw new ConverterException("Could not load the image.");
+                throw new ConverterException(ConverterErrorCode.ImageLoadFailed);
 
             if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
-                throw new ConverterException("Scale must be greater than zero and smaller than width and height of the image.");
+                throw new ConverterException(ConverterErrorCode.InvalidScale);
 
 
             if (string.IsNullOrEmpty(options.Characters))
@@ -73,11 +75,11 @@ namespace netscii.Utils.ImageConverters.Converters
 
                     int charIndex = ConverterHelpers.GetCharIndex(pixel, options.Characters.Length);
 
-                    tex.AppendFormat("{{\\color[rgb]{{{0},{1},{2}}} {3}}}",
+                    tex.AppendFormat("\n\t\t\t{{\\color[rgb]{{{0},{1},{2}}} {3}}}",
                         pixel.R / 255.0, pixel.G / 255.0, pixel.B / 255.0,
                         new string(options.Characters[charIndex], count));
                 }
-                tex.AppendLine(@"\newline").AppendLine();
+                tex.AppendLine("\n\t\t\t\\newline");
             }
 
             if (options.CreateFullDocument)
@@ -89,26 +91,27 @@ namespace netscii.Utils.ImageConverters.Converters
 
                 document.AppendLine($"\\usepackage[paperwidth={paperWidthCm}cm, paperheight={paperHeightCm}cm, margin=0pt]{{geometry}}");
 
-                document.AppendLine("\\begin{document}");
+                document.AppendLine("\n\\begin{document}\n");
                 document.AppendLine("\\vbox to \\textheight{");
-                document.AppendLine("\\vfill");
-                document.AppendLine("\\begin{center}");
-                document.AppendLine("{\\ttfamily");
-                document.AppendLine("\\setlength{\\baselineskip}{0pt}");
+                document.AppendLine("\t\\vfill");
+                document.AppendLine("\t\\begin{center}");
+                document.AppendLine("\t\t{\\ttfamily");
+                document.AppendLine("\t\t\t\\setlength{\\baselineskip}{0pt}");
             }
 
             document.Append(tex);
 
             if (options.CreateFullDocument)
             {
-                document.AppendLine("}");
-                document.AppendLine("\\end{center}").AppendLine();
-                document.AppendLine("\\vfill");
+                document.AppendLine("\t\t}");
+                document.AppendLine("\t\\end{center}");
+                document.AppendLine("\t\\vfill");
                 document.AppendLine("}");
                 document.AppendLine("\\end{document}").AppendLine();
             }
 
-            return document.ToString();
+            result.Content = document.ToString();
+            return result;
         }
     }
 }

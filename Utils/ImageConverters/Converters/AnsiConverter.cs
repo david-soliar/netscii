@@ -1,31 +1,33 @@
 ﻿using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using System.Text;
-using Microsoft.Extensions.Options;
 using netscii.Utils.ImageConverters.Models;
 using SixLabors.ImageSharp.Advanced;
 using netscii.Utils.ImageConverters.Exceptions;
+
 
 namespace netscii.Utils.ImageConverters.Converters
 {
     public class AnsiConverter
     {
-        public static string Convert(Stream imageStream, ConverterOptions options)
+        public static ConverterResult Convert(Stream imageStream, ConverterOptions options)
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
             int width = image.Width;
             int height = image.Height;
 
+            var result = new ConverterResult { Width = width, Height = height };
+
 
             if (image == null)
-                throw new ConverterException("Could not load the image.");
+                throw new ConverterException(ConverterErrorCode.ImageLoadFailed);
 
             if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
-                throw new ConverterException("Scale must be greater than zero and smaller than width and height of the image.");
+                throw new ConverterException(ConverterErrorCode.InvalidScale);
 
             if (string.IsNullOrEmpty(options.OperatingSystem))
-                throw new ConverterException("Operating system must be specified.");
+                throw new ConverterException(ConverterErrorCode.InvalidOperatingSystem);
 
 
             var code = new StringBuilder();
@@ -46,7 +48,7 @@ namespace netscii.Utils.ImageConverters.Converters
                     code.Append("printf \"");
                     break;
                 default:
-                    throw new ConverterException("Specified operating system should be from: Windows Terminal/Powershell, Mac/Linux Shell");
+                    throw new ConverterException(ConverterErrorCode.InvalidOperatingSystem);
             }
 
             var memoryGroup = image.GetPixelMemoryGroup();
@@ -54,12 +56,12 @@ namespace netscii.Utils.ImageConverters.Converters
             var pixelMemory = memoryGroup[0];
             var pixels = pixelMemory.Span;
 
-            for (int y = 0; y + options.Scale < height; y += options.Scale * 2)
+            for (int y = options.Scale; y < height; y += (options.Scale * 2))
             {
                 for (int x = 0; x < width; x += options.Scale)
                 {
-                    int indexTop = y * width + x;
-                    int indexBottom = (y + options.Scale) * width + x;
+                    int indexTop = (y - options.Scale) * width + x;
+                    int indexBottom = y * width + x;
 
                     Rgba32 pixelTop = pixels[indexTop];
                     Rgba32 pixelBottom = pixels[indexBottom];
@@ -89,7 +91,9 @@ namespace netscii.Utils.ImageConverters.Converters
             }
             code.Append($"{escape}[0m");
             code.Append("\"");
-            return code.ToString();
+
+            result.Content = code.ToString();
+            return result;
         }
     }
 }

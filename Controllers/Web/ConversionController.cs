@@ -1,17 +1,20 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using netscii.Models.ViewModels;
-using netscii.Services.Interfaces;
+using netscii.Services;
+using netscii.Services.Factories;
+using netscii.Utils.ImageConverters.Exceptions;
+using netscii.Utils.ImageConverters.Models;
 
 
 namespace netscii.Controllers.Web
 {
-    [Route("{format}")]
+    [Route("convert/{format}")]
     public class ConversionController : Controller
     {
-        private readonly IConversionService _conversionService;
-        private readonly IConversionViewModelFactory _viewModelFactory;
+        private readonly ConversionService _conversionService;
+        private readonly ConversionViewModelFactory _viewModelFactory;
 
-        public ConversionController(IConversionService conversionService, IConversionViewModelFactory viewModelFactory)
+        public ConversionController(ConversionService conversionService, ConversionViewModelFactory viewModelFactory)
         {
             _conversionService = conversionService;
             _viewModelFactory = viewModelFactory;
@@ -20,26 +23,36 @@ namespace netscii.Controllers.Web
         [HttpGet]
         public async Task<IActionResult> Index([FromRoute] string format)
         {
-
-            if (!netscii.Constants.SupportedFormats.All.Contains(format))
-                return BadRequest(new { error = "Unsupported format" });
+            if (_conversionService.IsUnsupportedFormat(format))
+                return View("Error", new ErrorViewModel { Code = 400, Message = "Unsupported format" });
 
             var model = await _viewModelFactory.CreateWithDefaults(format);
+
             return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> Index([FromRoute] string format, ConversionViewModel model)
         {
-            if (model.IsInvalid())
-                return BadRequest(model.Status);
+            if (_conversionService.IsUnsupportedFormat(format))
+                return View("Error", new ErrorViewModel { Code = 400, Message = "Unsupported format" });
 
-            if (!netscii.Constants.SupportedFormats.All.Contains(format))
-                return BadRequest(new { error = "Unsupported format" });
+            try
+            {
+                ConverterResult result = await _conversionService.ConvertAsync(format, model);
+                model.Result = result.Content;
+                await _viewModelFactory.Repopulate(model, format);
 
-            model.Result = await _conversionService.ConvertAsync(format, model);
-
-            return View(model);
+                return View(model);
+            }
+            catch (ConverterException ex)
+            {
+                return View("Error", new ErrorViewModel { Code = 400, Message = ex.Message });
+            }
+            catch
+            {
+                return View("Error", new ErrorViewModel { Code = 400, Message = "Internal server error" });
+            }
         }
     }
 }

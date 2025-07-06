@@ -1,4 +1,17 @@
-﻿@page
-@model netscii.Views.Shared.ErrorModel
+﻿@model ErrorViewModel
+
 @{
+    ViewData["Title"] = $"Error {Model.Code}";
 }
+
+<div class="container mt-5">
+    <div class="alert alert-danger text-center">
+        <h1 class="display-4">Error @Model.Code</h1>
+        <p class="lead">@Model.Message</p>
+        <small class="text-muted">
+            <time datetime="@Model.Timestamp.ToString("o")" title="@Model.Timestamp.ToLocalTime().ToString("F")">
+                @Model.Timestamp.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss")
+            </time>
+        </small>
+    </div>
+</div>

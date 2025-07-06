@@ -1,10 +1,8 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using netscii.Models;
 using netscii.Services;
 using netscii.Services.Factories;
-using netscii.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,15 +12,17 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddDbContext<NetsciiContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IConversionViewModelFactory, ConversionViewModelFactory>();
-builder.Services.AddScoped<IConversionService, ConversionService>();
+builder.Services.AddScoped<FontService>();
+builder.Services.AddScoped<OperatingSystemService>();
+builder.Services.AddScoped<ConversionService>();
+builder.Services.AddScoped<ConversionViewModelFactory>();
 
+builder.Services.AddMemoryCache();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
-
 
 var app = builder.Build();
 
@@ -53,4 +53,4 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-// examples, api, test, errory nech sa spravne renderuju + template, db api
+// examples, api, test, errory nech sa spravne renderuju + template, db api, pridat json support pre api - momentalne je form

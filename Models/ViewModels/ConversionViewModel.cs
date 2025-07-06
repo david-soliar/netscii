@@ -19,15 +19,5 @@
         public string Status { get; set; } = string.Empty;
 
         public Stream GetImageStream() => Image.OpenReadStream();
-
-        public bool IsInvalid()
-        {
-            if (Image == null || Image.Length == 0)
-            {
-                Status = "Image file is required.";
-                return true;
-            }
-            return false;
-        }
     }
 }

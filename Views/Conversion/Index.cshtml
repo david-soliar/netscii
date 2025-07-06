@@ -10,9 +10,9 @@
 }
 
 
-<h2 class="mb-4">Convert Image to @format.ToUpperInvariant()</h2>
+<h1 class="mb-4">Convert Image to @format.ToUpperInvariant()</h1>
 
-<form method="post" enctype="multipart/form-data" asp-controller="@format" asp-action="Index" class="row g-3">
+<form method="post" enctype="multipart/form-data" asp-controller="Conversion" asp-action="Index" class="row g-3">
     <div id="image-container" class="col-md-6">
         <label for="image" class="form-label">Select Image:</label>
         <input type="file" id="image" name="image" accept="image/*" class="form-control" required />

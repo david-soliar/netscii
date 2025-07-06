@@ -1,14 +1,13 @@
 ﻿using netscii.Models.ViewModels;
-using netscii.Services.Interfaces;
 using netscii.Utils.ImageConverters;
 using netscii.Utils.ImageConverters.Models;
-using netscii.Utils.ImageConverters.Converters;
+
 
 namespace netscii.Services
 {
-    public class ConversionService : IConversionService
+    public class ConversionService
     {
-        public Task<string> ConvertAsync(string format, ConversionViewModel request)
+        public Task<ConverterResult> ConvertAsync(string format, ConversionViewModel request)
         {
             return Task.Run(() =>
             {
@@ -29,6 +28,11 @@ namespace netscii.Services
 
                 return ConverterDispatcher.Convert(format, stream, options);
             });
+        }
+
+        public bool IsUnsupportedFormat(string format)
+        {
+            return !ConverterDispatcher.Converters.ContainsKey(format);
         }
     }
 }

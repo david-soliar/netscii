@@ -1,17 +1,19 @@
 ﻿using netscii.Models.ViewModels;
 using netscii.Models;
 using Microsoft.EntityFrameworkCore;
-using netscii.Services.Interfaces;
+
 
 namespace netscii.Services.Factories
 {
-    public class ConversionViewModelFactory : IConversionViewModelFactory
+    public class ConversionViewModelFactory
     {
-        private readonly NetsciiContext _context;
+        private readonly FontService _fontService;
+        private readonly OperatingSystemService _operatingSystemService;
 
-        public ConversionViewModelFactory(NetsciiContext context)
+        public ConversionViewModelFactory(FontService fontService, OperatingSystemService operatingSystemService)
         {
-            _context = context;
+            _fontService = fontService;
+            _operatingSystemService = operatingSystemService;
         }
 
         public async Task<ConversionViewModel> CreateWithDefaults(string format)
@@ -26,26 +28,24 @@ namespace netscii.Services.Factories
                 _ => string.Empty
             };
 
-            var fontsFromDb = await _context.Fonts
-                                  .Where(f => f.Format == format) // toto do DB managera
-                                  .Select(f => f.Name)
-                                  .ToListAsync();
-
-            var operatingSystemsFromDb = await _context.OperatingSystems
-                      .Select(f => f.Name)
-                      .ToListAsync();
-
             var model = new ConversionViewModel
             {
                 Format = format,
-                Fonts = fontsFromDb,
-                OperatingSystems = operatingSystemsFromDb,
                 Characters = characters
             };
-            model.Font = fontsFromDb.FirstOrDefault(string.Empty);
-            model.OperatingSystem = operatingSystemsFromDb.FirstOrDefault(string.Empty);
+
+            await Repopulate(model, format);
+
+            model.Font = model.Fonts.FirstOrDefault(string.Empty);
+            model.OperatingSystem = model.OperatingSystems.FirstOrDefault(string.Empty);
 
             return model;
+        }
+
+        public async Task Repopulate(ConversionViewModel model, string format)
+        {
+            model.Fonts = await _fontService.GetForFormatAsync(format);
+            model.OperatingSystems = await _operatingSystemService.GetForFormatAsync(format);
         }
     }
 }

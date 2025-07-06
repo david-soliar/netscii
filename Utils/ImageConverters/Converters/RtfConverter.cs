@@ -1,28 +1,30 @@
 ﻿using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp;
 using System.Text;
-using Microsoft.Extensions.Options;
 using SixLabors.ImageSharp.Advanced;
 using netscii.Utils.ImageConverters.Models;
 using netscii.Utils.ImageConverters.Exceptions;
+
 
 namespace netscii.Utils.ImageConverters.Converters
 {
     public class RtfConverter
     {
-        public static string Convert(Stream imageStream, ConverterOptions options)
+        public static ConverterResult Convert(Stream imageStream, ConverterOptions options)
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
             int width = image.Width;
             int height = image.Height;
 
+            var result = new ConverterResult { Width = width, Height = height };
+
 
             if (image == null)
-                throw new ConverterException("Could not load the image.");
+                throw new ConverterException(ConverterErrorCode.ImageLoadFailed);
 
             if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
-                throw new ConverterException("Scale must be greater than zero and smaller than width and height of the image.");
+                throw new ConverterException(ConverterErrorCode.InvalidScale);
 
 
             if (string.IsNullOrEmpty(options.Characters))
@@ -62,7 +64,7 @@ namespace netscii.Utils.ImageConverters.Converters
 
                     int indexOfColor = definedColors.IndexOf(pixel);
 
-                    text.Append($"\\cf{indexOfColor + 1} {options.Characters[charIndex]}");
+                    text.Append($"\\cf{indexOfColor + 1} {options.Characters[charIndex]} ");
                 }
                 text.AppendLine("\\line");
             }
@@ -70,11 +72,11 @@ namespace netscii.Utils.ImageConverters.Converters
             head.AppendLine("{\\rtf1\\ansi\\deff0");
             head.Append("{\\fonttbl{\\f0");
             head.Append(options.Font);
-            head.Append(";}}\\n");
+            head.Append(";}}\n");
             head.Append("{\\colortbl ;");
             foreach (var item in definedColors)
             {
-                head.Append($"\\red{item.R}\\green{item.G}\\blue{item.B};");
+                head.Append($"\n\t\\red{item.R}\\green{item.G}\\blue{item.B};");
             }
             Rgba32 bg = new Rgba32();
             if (options.UseBackgroundColor)
@@ -87,7 +89,7 @@ namespace netscii.Utils.ImageConverters.Converters
                 }
             }
 
-            head.Append("}\n");
+            head.Append("\n}\n");
 
             if (options.UseBackgroundColor)
             {
@@ -95,11 +97,13 @@ namespace netscii.Utils.ImageConverters.Converters
                 head.AppendLine($"\\highlight{indexOfBg + 1} ");
             }
 
-            head.Append("\\f0\\sl200\\slmult1\n");
+            head.AppendLine("\\f0\\sl200\\slmult1\n");
             head.Append(text);
 
             head.Append("}");
-            return head.ToString();
+
+            result.Content = head.ToString();
+            return result;
         }
     }
 }

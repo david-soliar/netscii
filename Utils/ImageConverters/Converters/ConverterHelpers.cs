@@ -1,12 +1,10 @@
 ﻿using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Primitives;
+using netscii.Utils.ImageConverters.Exceptions;
 using netscii.Utils.ImageConverters.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
-using System;
-using System.IO.Pipelines;
-using System.Text;
 
 
 namespace netscii.Utils.ImageConverters.Converters
@@ -82,7 +80,7 @@ namespace netscii.Utils.ImageConverters.Converters
                 hex = hex.Substring(1);
 
             if (hex.Length != 6)
-                throw new ArgumentException("Hex color must be 6 characters (e.g. #FFAABB)");
+                throw new ConverterException(ConverterErrorCode.ConversionFailed);
 
             int r = System.Convert.ToInt32(hex.Substring(0, 2), 16);
             int g = System.Convert.ToInt32(hex.Substring(2, 2), 16);
