@@ -1,11 +1,16 @@
 ﻿@model ConversionViewModel
 @using System.Linq
 @{
-    var format = Model.Controller ?? "Format";
+    var format = Model.Format;
+    ViewData["Title"] = $"Convert image to {format}";
+}
+
+@section Head {
+    <link rel='stylesheet' href='/css/conversion-form.css' />
 }
 
 
-<h2 class="mb-4">Convert Image to @format</h2>
+<h2 class="mb-4">Convert Image to @format.ToUpperInvariant()</h2>
 
 <form method="post" enctype="multipart/form-data" asp-controller="@format" asp-action="Index" class="row g-3">
     <div id="image-container" class="col-md-6">
@@ -86,6 +91,85 @@
     </div>
 </form>
 
-<h3 class="mt-5">Generated @format:</h3>
+<h3 class="mt-5">Generated @format.ToUpperInvariant():</h3>
 
 <div id="result-container" class="rounded p-3 bg-body text-body w-100 border border-primary">@if (Model.Result != null){ @Html.Raw(Model.Result) }</div>
+
+
+@section Scripts {
+    <script src='/js/conversion-form.js'></script>
+
+    @switch (format)
+    {
+        case "svg":
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                hideContainer("create-full-document");
+                hideContainer("use-small-palette");
+                hideContainer("operating-system");
+                });
+            </script>
+            break;
+        case "ansi":
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                hideContainer("font");
+                hideContainer("create-full-document");
+                hideContainer("background");
+                hideContainer("characters");
+                });
+            </script>
+            break;
+        case "html":
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                hideContainer("create-full-document");
+                hideContainer("use-small-palette");
+                hideContainer("operating-system");
+                });
+            </script>
+            break;
+        case "latex":
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                hideContainer("use-small-palette");
+                hideContainer("operating-system");
+                });
+            </script>
+            break;
+        case "rtf":
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                hideContainer("create-full-document");
+                hideContainer("use-small-palette");
+                hideContainer("operating-system");
+                });
+            </script>
+            break;
+        case "txt":
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                hideContainer("font");
+                hideContainer("create-full-document");
+                hideContainer("background");
+                hideContainer("use-small-palette");
+                hideContainer("operating-system");
+                });
+            </script>
+            break;
+        case "emoji":
+            <script>
+                document.addEventListener("DOMContentLoaded", () => {
+                hideContainer("font");
+                hideContainer("create-full-document");
+                hideContainer("background");
+                hideContainer("characters");
+                hideContainer("use-small-palette");
+                hideContainer("operating-system");
+                });
+            </script>
+            break;
+        default:
+            break;
+    }
+}

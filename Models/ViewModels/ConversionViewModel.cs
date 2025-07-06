@@ -14,7 +14,7 @@
         public string OperatingSystem { get; set; } = string.Empty;
         public List<string> OperatingSystems { get; set; } = new List<string>();
         public bool UseSmallPalette { get; set; } = false;
-        public string Controller { get; set; } = string.Empty;
+        public string Format { get; set; } = string.Empty;
         public string Result { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
 

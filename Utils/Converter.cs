@@ -5,6 +5,10 @@ using SixLabors.ImageSharp.PixelFormats;
 using System.Text;
 
 
+
+// ak su char "" tak dat error lebo to pojde mimo rangu
+
+
 namespace netscii.Utils
 {
     public class Converter

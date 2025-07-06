@@ -11,18 +11,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-builder.Services.AddSingleton<IHTMLConversionService, HTMLConversionService>();
-builder.Services.AddSingleton<ISVGConversionService, SVGConversionService>();
-builder.Services.AddSingleton<IANSIConversionService, ANSIConversionService>();
-builder.Services.AddSingleton<ILATEXConversionService, LATEXConversionService>();
-builder.Services.AddSingleton<IRTFConversionService, RTFConversionService>();
-builder.Services.AddSingleton<IEMOJIConversionService, EMOJIConversionService>();
-builder.Services.AddSingleton<ITXTConversionService, TXTConversionService>();
-
 builder.Services.AddDbContext<NetsciiContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IConversionViewModelFactory, ConversionViewModelFactory>();
+builder.Services.AddScoped<IConversionService, ConversionService>();
 
 
 builder.Services.AddControllers().AddJsonOptions(options =>
@@ -50,7 +43,7 @@ app.MapStaticAssets();
 app.MapControllers();
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}");
 
 using (var scope = app.Services.CreateScope())
 {

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using netscii.Models;
 using netscii.Models.ViewModels;
 using netscii.Services.Interfaces;
 
@@ -9,13 +8,11 @@ namespace netscii.Controllers.Api
     [Route("api/")]
     public class ConvertApiController : Controller
     {
-        private readonly NetsciiContext _context;
-        private readonly Dictionary<string, IConversionService> _conversionServices;
+        private readonly IConversionService _conversionService;
 
-        public ConvertApiController(IEnumerable<IConversionService> conversionServices, NetsciiContext context)
+        public ConvertApiController(IConversionService conversionService)
         {
-            _conversionServices = conversionServices.ToDictionary(s => s.FormatName, s => s);
-            _context = context;
+            _conversionService = conversionService;
         }
 
         [HttpPost("{format}")]
@@ -24,10 +21,10 @@ namespace netscii.Controllers.Api
             if (request.IsInvalid())
                 return BadRequest(new { error = request.Status });
 
-            if (!_conversionServices.TryGetValue(format.ToLowerInvariant(), out var service))
+            if (!netscii.Constants.SupportedFormats.All.Contains(format))
                 return BadRequest(new { error = "Unsupported format" });
 
-            var result = await service.ConvertAsync(request);
+            var result = await _conversionService.ConvertAsync(format, request);
 
             return Ok(new
             {

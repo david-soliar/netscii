@@ -37,7 +37,7 @@ namespace netscii.Services.Factories
 
             var model = new ConversionViewModel
             {
-                Controller = format,
+                Format = format,
                 Fonts = fontsFromDb,
                 OperatingSystems = operatingSystemsFromDb,
                 Characters = characters

@@ -45,32 +45,32 @@ namespace netscii.Models
                 {
                     var fonts = new[]
                     {
-                        new Font { Format = "HTML", Name = "monospace" },
-                        new Font { Format = "HTML", Name = "'Courier', monospace" },
-                        new Font { Format = "HTML", Name = "'Courier New', monospace" },
-                        new Font { Format = "HTML", Name = "'Monaco', monospace" },
-                        new Font { Format = "HTML", Name = "'Consolas', monospace" },
-                        new Font { Format = "HTML", Name = "'Andale Mono', monospace" },
-                        new Font { Format = "HTML", Name = "'Lucida Console', monospace" },
+                        new Font { Format = "html", Name = "monospace" },       //pridat alias pre page rendering
+                        new Font { Format = "html", Name = "'Courier', monospace" },
+                        new Font { Format = "html", Name = "'Courier New', monospace" },
+                        new Font { Format = "html", Name = "'Monaco', monospace" },
+                        new Font { Format = "html", Name = "'Consolas', monospace" },
+                        new Font { Format = "html", Name = "'Andale Mono', monospace" },
+                        new Font { Format = "html", Name = "'Lucida Console', monospace" },
 
-                        new Font { Format = "SVG", Name = "monospace" },
-                        new Font { Format = "SVG", Name = "'Courier', monospace" },
-                        new Font { Format = "SVG", Name = "'Courier New', monospace" },
-                        new Font { Format = "SVG", Name = "'Monaco', monospace" },
-                        new Font { Format = "SVG", Name = "'Consolas', monospace" },
-                        new Font { Format = "SVG", Name = "'Andale Mono', monospace" },
-                        new Font { Format = "SVG", Name = "'Lucida Console', monospace" },
+                        new Font { Format = "svg", Name = "monospace" },
+                        new Font { Format = "svg", Name = "'Courier', monospace" },
+                        new Font { Format = "svg", Name = "'Courier New', monospace" },
+                        new Font { Format = "svg", Name = "'Monaco', monospace" },
+                        new Font { Format = "svg", Name = "'Consolas', monospace" },
+                        new Font { Format = "svg", Name = "'Andale Mono', monospace" },
+                        new Font { Format = "svg", Name = "'Lucida Console', monospace" },
 
-                        new Font { Format = "LATEX", Name = "courier" },
-                        new Font { Format = "LATEX", Name = "inconsolata" },
-                        new Font { Format = "LATEX", Name = "luximono" },
-                        new Font { Format = "LATEX", Name = "anonymouspro" },
-                        new Font { Format = "LATEX", Name = "beramono" },
+                        new Font { Format = "latex", Name = "courier" },
+                        new Font { Format = "latex", Name = "inconsolata" },
+                        new Font { Format = "latex", Name = "luximono" },
+                        new Font { Format = "latex", Name = "anonymouspro" },
+                        new Font { Format = "latex", Name = "beramono" },
 
-                        new Font { Format = "RTF", Name = "Lucida Console" },
-                        new Font { Format = "RTF", Name = "Courier New" },
-                        new Font { Format = "RTF", Name = "Consolas" },
-                        new Font { Format = "RTF", Name = "Fixedsys" },
+                        new Font { Format = "rtf", Name = "Lucida Console" },
+                        new Font { Format = "rtf", Name = "Courier New" },
+                        new Font { Format = "rtf", Name = "Consolas" },
+                        new Font { Format = "rtf", Name = "Fixedsys" },
 
                     };
                     context.Fonts.AddRange(fonts);

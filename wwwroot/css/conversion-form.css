@@ -2,6 +2,7 @@
     min-height: 100px;
     white-space: pre-wrap;
     word-break: break-all;
+    font-family: monospace;
 }
 
 .btn-conversion-form {
