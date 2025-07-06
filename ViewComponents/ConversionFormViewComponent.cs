@@ -7,6 +7,11 @@ namespace netscii.ViewComponents
     {
         public IViewComponentResult Invoke(ConversionViewModel model)
         {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model), "ConversionViewModel passed to ViewComponent is null");
+            }
+
             var items = ViewContext.HttpContext.Items;
 
             items["netscii.Title"] = $"Convert image to {model.Controller}";
