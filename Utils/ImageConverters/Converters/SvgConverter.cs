@@ -43,7 +43,7 @@ namespace netscii.Utils.ImageConverters.Converters
 
             svg.AppendLine($"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {width / options.Scale * 24 - 8} {height / options.Scale * 32}\" width=\"100%\" height=\"100%\" font-family=\"{options.Font}\" font-size=\"32\" preserveAspectRatio=\"xMinYMin meet\">");
 
-            string bg = options.UseBackgroundColor ? options.Background : "transparent";
+            string bg = options.UseBackgroundColor && !string.IsNullOrWhiteSpace(options.Background) ? options.Background : "transparent";
             svg.AppendLine($"\t<rect width=\"100%\" height=\"100%\" fill=\"{bg}\" />\n");
 
             int ySVG = 24;

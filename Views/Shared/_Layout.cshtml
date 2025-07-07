@@ -27,7 +27,7 @@
                             <a class="nav-link @(string.IsNullOrEmpty(currentFormat) ? "active" : "")" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        @foreach (var format in netscii.Constants.SupportedFormats.All)
+                        @foreach (var format in netscii.Utils.ImageConverters.ConverterDispatcher.Converters.Keys.ToList())
                         {
                             <li class="nav-item">
                                 <a class="nav-link @(currentFormat == format ? "active" : "")"

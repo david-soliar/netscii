@@ -4,6 +4,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Text;
+using System.Text.Json.Nodes;
 
 
 namespace netscii.Utils.ImageConverters.Converters
@@ -55,8 +56,8 @@ namespace netscii.Utils.ImageConverters.Converters
                 "    font-family: {0};\n" +
                 "    background-color: {1};\n" +
                 "}}\n",
-                options.Font,
-                options.UseBackgroundColor ? options.Background : "transparent");
+            options.Font,
+                options.UseBackgroundColor && !string.IsNullOrWhiteSpace(options.Background) ? options.Background : "transparent");
 
 
             html.Append("\n<pre id=\"netscii-html-result\">\n");

@@ -79,7 +79,7 @@ namespace netscii.Utils.ImageConverters.Converters
                 head.Append($"\n\t\\red{item.R}\\green{item.G}\\blue{item.B};");
             }
             Rgba32 bg = new Rgba32();
-            if (options.UseBackgroundColor)
+            if (options.UseBackgroundColor && !string.IsNullOrWhiteSpace(options.Background))
             {
                 var (r, g, b) = ConverterHelpers.HexToRGB("#FFAA33");
                 bg = new Rgba32(r, g, b);
@@ -91,7 +91,7 @@ namespace netscii.Utils.ImageConverters.Converters
 
             head.Append("\n}\n");
 
-            if (options.UseBackgroundColor)
+            if (options.UseBackgroundColor && !string.IsNullOrWhiteSpace(options.Background))
             {
                 int indexOfBg = definedColors.IndexOf(bg);
                 head.AppendLine($"\\highlight{indexOfBg + 1} ");

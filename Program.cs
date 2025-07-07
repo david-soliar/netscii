@@ -54,3 +54,4 @@ using (var scope = app.Services.CreateScope())
 app.Run();
 
 // examples, api, test, errory nech sa spravne renderuju + template, db api, pridat json support pre api - momentalne je form
+// abstrahovat priame acces z _layout do util nejako

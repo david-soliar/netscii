@@ -45,7 +45,7 @@ namespace netscii.Utils.ImageConverters.Converters
                 document.AppendLine("\\linespread{0}");
             }
 
-            if (options.UseBackgroundColor)
+            if (options.UseBackgroundColor && !string.IsNullOrWhiteSpace(options.Background))
             {
                 document.AppendLine("\\definecolor{mybg}{rgb}{0.1,0.2,0.3}");
                 document.AppendLine("\\pagecolor{mybg}");

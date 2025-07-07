@@ -30,6 +30,28 @@ namespace netscii.Services
             });
         }
 
+        public async Task<ConverterResult> ConvertAsync(string format, JsonConversionViewModel jsonModel)
+        {
+            byte[] imageBytes = Convert.FromBase64String(jsonModel.Image);
+            using var imageStream = new MemoryStream(imageBytes);
+
+            var internalModel = new ConversionViewModel
+            {
+                Image = new FormFile(imageStream, 0, imageBytes.Length, "Image", "upload.image"),
+                Characters = jsonModel.Characters,
+                Scale = jsonModel.Scale,
+                Invert = jsonModel.Invert,
+                Font = jsonModel.Font,
+                Background = jsonModel.Background,
+                UseBackgroundColor = !string.IsNullOrWhiteSpace(jsonModel.Background),
+                CreateFullDocument = jsonModel.CreateFullDocument,
+                OperatingSystem = jsonModel.OperatingSystem,
+                UseSmallPalette = jsonModel.UseSmallPalette
+            };
+            return await ConvertAsync(format, internalModel);
+        }
+
+
         public bool IsUnsupportedFormat(string format)
         {
             return !ConverterDispatcher.Converters.ContainsKey(format);
