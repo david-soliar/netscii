@@ -37,7 +37,7 @@
                 ConverterErrorCode.InvalidBackgroundColor => "The background color is invalid.",
                 ConverterErrorCode.InvalidFont => "The selected font is invalid or unsupported.",
 
-                ConverterErrorCode.InvalidOperatingSystem => "The selected operating system is invalid or unsupported.",
+                ConverterErrorCode.UnsupportedPlatform => "The selected operating system is invalid or unsupported.",
 
                 _ => "An unknown error occurred during conversion."
             };
@@ -59,6 +59,6 @@
         InvalidFont,
         InvalidBackgroundColor,
 
-        InvalidOperatingSystem
+        UnsupportedPlatform
     }
 }

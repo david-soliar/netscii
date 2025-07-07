@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using netscii.Models.Entities;
 
+
 namespace netscii.Models
 {
     public static class DBInitializer
@@ -75,17 +76,6 @@ namespace netscii.Models
                     };
                     context.Fonts.AddRange(fonts);
                 }
-
-                if (!context.OperatingSystems.Any())
-                {
-                    var operatingSystems = new[]
-                    {
-                        new Entities.OperatingSystem { Name = "Windows Terminal/Powershell" }, // toto nejako lepsie pomenovat
-                        new Entities.OperatingSystem { Name = "Mac/Linux Shell" }
-                    };
-                    context.OperatingSystems.AddRange(operatingSystems);
-                }
-
 
                 context.SaveChanges();
             }

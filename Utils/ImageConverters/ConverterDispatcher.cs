@@ -32,6 +32,13 @@ namespace netscii.Utils.ImageConverters
                 { "emoji", "text/plain" }
             };
 
+        public static readonly IReadOnlyList<string> SupportedPlatforms =
+            new List<string>
+            {
+                "Windows Console",
+                "Unix-like Shell"
+            }.AsReadOnly();
+
         public static ConverterResult Convert(string format, Stream stream, ConverterOptions options)
         {
             if (!Converters.TryGetValue(format, out var converter))

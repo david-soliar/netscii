@@ -13,9 +13,12 @@ builder.Services.AddDbContext<NetsciiContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<FontService>();
-builder.Services.AddScoped<OperatingSystemService>();
+builder.Services.AddScoped<ColorService>();
 builder.Services.AddScoped<ConversionService>();
 builder.Services.AddScoped<ConversionViewModelFactory>();
+
+builder.Services.AddScoped<FontRepository>();
+builder.Services.AddScoped<ColorRepository>();
 
 builder.Services.AddMemoryCache();
 
@@ -53,5 +56,5 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-// examples, api, test, errory nech sa spravne renderuju + template, db api, pridat json support pre api - momentalne je form
+// examples, log aktivity/historia, suggestions
 // abstrahovat priame acces z _layout do util nejako

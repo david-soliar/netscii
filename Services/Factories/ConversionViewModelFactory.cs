@@ -8,12 +8,12 @@ namespace netscii.Services.Factories
     public class ConversionViewModelFactory
     {
         private readonly FontService _fontService;
-        private readonly OperatingSystemService _operatingSystemService;
+        private readonly ConversionService _conversionService;
 
-        public ConversionViewModelFactory(FontService fontService, OperatingSystemService operatingSystemService)
+        public ConversionViewModelFactory(FontService fontService, ConversionService conversionService)
         {
             _fontService = fontService;
-            _operatingSystemService = operatingSystemService;
+            _conversionService = conversionService;
         }
 
         public async Task<ConversionViewModel> CreateWithDefaults(string format)
@@ -36,16 +36,16 @@ namespace netscii.Services.Factories
 
             await Repopulate(model, format);
 
+            model.Platform = model.Platforms.FirstOrDefault(string.Empty);
             model.Font = model.Fonts.FirstOrDefault(string.Empty);
-            model.OperatingSystem = model.OperatingSystems.FirstOrDefault(string.Empty);
 
             return model;
         }
 
         public async Task Repopulate(ConversionViewModel model, string format)
         {
-            model.Fonts = await _fontService.GetForFormatAsync(format);
-            model.OperatingSystems = await _operatingSystemService.GetForFormatAsync(format);
+            model.Platforms = _conversionService.SupportedPlatforms().ToList();
+            model.Fonts = await _fontService.GetFontsByFormatAsync(format);
         }
     }
 }

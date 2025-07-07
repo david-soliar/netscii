@@ -26,8 +26,8 @@ namespace netscii.Utils.ImageConverters.Converters
             if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
                 throw new ConverterException(ConverterErrorCode.InvalidScale);
 
-            if (string.IsNullOrEmpty(options.OperatingSystem))
-                throw new ConverterException(ConverterErrorCode.InvalidOperatingSystem);
+            if (string.IsNullOrEmpty(options.Platform))
+                throw new ConverterException(ConverterErrorCode.UnsupportedPlatform);
 
 
             var code = new StringBuilder();
@@ -35,20 +35,20 @@ namespace netscii.Utils.ImageConverters.Converters
             string escape;
             string newLine;
 
-            switch (options.OperatingSystem)
+            switch (options.Platform)
             {
-                case "Windows Terminal/Powershell":
+                case "Windows Console":
                     escape = "$([char]27)";
                     newLine = "`n";
                     code.Append("Write-Host \"");
                     break;
-                case "Mac/Linux Shell":
+                case "Unix-like Shell":
                     escape = "\\e";
                     newLine = "\\n";
                     code.Append("printf \"");
                     break;
                 default:
-                    throw new ConverterException(ConverterErrorCode.InvalidOperatingSystem);
+                    throw new ConverterException(ConverterErrorCode.UnsupportedPlatform);
             }
 
             var memoryGroup = image.GetPixelMemoryGroup();

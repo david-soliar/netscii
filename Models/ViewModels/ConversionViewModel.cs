@@ -11,8 +11,8 @@
         public string Background { get; set; } = string.Empty;
         public bool UseBackgroundColor { get; set; } = false;
         public bool CreateFullDocument { get; set; } = true;
-        public string OperatingSystem { get; set; } = string.Empty;
-        public List<string> OperatingSystems { get; set; } = new List<string>();
+        public string Platform { get; set; } = string.Empty;
+        public List<string> Platforms { get; set; } = new List<string>();
         public bool UseSmallPalette { get; set; } = false;
         public string Format { get; set; } = string.Empty;
         public string Result { get; set; } = string.Empty;
