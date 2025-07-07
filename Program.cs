@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using netscii.Models;
+using netscii.Repositories;
 using netscii.Services;
 using netscii.Services.Factories;
 
@@ -15,10 +16,13 @@ builder.Services.AddDbContext<NetsciiContext>(options =>
 builder.Services.AddScoped<FontService>();
 builder.Services.AddScoped<ColorService>();
 builder.Services.AddScoped<ConversionService>();
+builder.Services.AddScoped<ConversionLoggingService>();
+
 builder.Services.AddScoped<ConversionViewModelFactory>();
 
 builder.Services.AddScoped<FontRepository>();
 builder.Services.AddScoped<ColorRepository>();
+builder.Services.AddScoped<ConversionLoggingRepository>();
 
 builder.Services.AddMemoryCache();
 

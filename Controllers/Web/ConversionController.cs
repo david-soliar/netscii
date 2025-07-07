@@ -9,14 +9,12 @@ using netscii.Utils.ImageConverters.Models;
 namespace netscii.Controllers.Web
 {
     [Route("convert/{format}")]
-    public class ConversionController : BaseConversionController
+    public class ConversionController : BaseController
     {
-        private readonly ConversionService _conversionService;
         private readonly ConversionViewModelFactory _viewModelFactory;
 
         public ConversionController(ConversionService conversionService, ConversionViewModelFactory viewModelFactory) : base(conversionService)
         {
-            _conversionService = conversionService;
             _viewModelFactory = viewModelFactory;
         }
 

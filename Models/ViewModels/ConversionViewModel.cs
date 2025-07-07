@@ -10,7 +10,6 @@
         public List<string> Fonts { get; set; } = new List<string>();
         public string Background { get; set; } = string.Empty;
         public bool UseBackgroundColor { get; set; } = false;
-        public bool CreateFullDocument { get; set; } = true;
         public string Platform { get; set; } = string.Empty;
         public List<string> Platforms { get; set; } = new List<string>();
         public bool UseSmallPalette { get; set; } = false;

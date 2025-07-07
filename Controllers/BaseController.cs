@@ -3,14 +3,16 @@ using netscii.Models.ViewModels;
 using netscii.Services;
 using netscii.Utils.ImageConverters.Exceptions;
 
-namespace netscii.Controllers.Api
+namespace netscii.Controllers
 {
-    public abstract class BaseConversionController : Controller
+    public abstract class BaseController : Controller
     {
         protected readonly List<string> _formats;
+        protected readonly ConversionService _conversionService;
 
-        protected BaseConversionController(ConversionService conversionService)
+        protected BaseController(ConversionService conversionService)
         {
+            _conversionService = conversionService;
             _formats = conversionService.SupportedFormats();
         }
 
@@ -26,8 +28,10 @@ namespace netscii.Controllers.Api
             {
                 return ErrorResponse(400, ex.Message, renderErrorView);
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"[ERROR] {ex.GetType().Name}: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
                 return ErrorResponse(errorCode, errorMessage, renderErrorView);
             }
         }

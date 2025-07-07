@@ -1,6 +1,6 @@
-﻿namespace netscii.Models.ViewModels
+﻿namespace netscii.Models.Dto
 {
-    public class JsonConversionViewModel
+    public class JsonConversionDto
     {
         public string Image { get; set; } = string.Empty;
         public string Characters { get; set; } = string.Empty;
@@ -9,8 +9,8 @@
         public string Font { get; set; } = string.Empty;
         public string Background { get; set; } = string.Empty;
         public bool UseBackgroundColor { get; set; } = false;
-        public bool CreateFullDocument { get; set; } = true;
         public string Platform { get; set; } = string.Empty;
         public bool UseSmallPalette { get; set; } = false;
+        public int Period { get; set; } = 24;
     }
 }

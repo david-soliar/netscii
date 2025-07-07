@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using netscii.Models.Dto;
 using netscii.Models.ViewModels;
 using netscii.Services;
 
@@ -7,13 +8,11 @@ namespace netscii.Controllers.Api
 {
     [ApiController]
     [Route("api/convert/{format}")]
-    public class ApiConversionController : BaseConversionController
+    public class ApiConversionController : BaseController
     {
-        private readonly ConversionService _conversionService;
 
         public ApiConversionController(ConversionService conversionService) : base(conversionService)
         {
-            _conversionService = conversionService;
         }
 
         [HttpPost]
@@ -31,7 +30,7 @@ namespace netscii.Controllers.Api
 
         [HttpPost]
         [Consumes("application/json")]
-        public async Task<IActionResult> ConvertJson([FromRoute] string format, [FromBody] JsonConversionViewModel jsonRequest)
+        public async Task<IActionResult> ConvertJson([FromRoute] string format, [FromBody] JsonConversionDto jsonRequest)
         {
             if (IsUnsupportedFormat(format))
                 return ErrorResponse(400, "Unsupported format");

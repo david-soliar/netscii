@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using netscii.Models.Dto;
 using netscii.Services;
 
 
@@ -7,17 +8,17 @@ namespace netscii.Controllers.Api
     [ApiController]
     [Route("api")]
     [Produces("application/json")]
-    public class ApiInfoController : BaseConversionController
+    public class ApiInfoController : BaseController
     {
-        private readonly ConversionService _conversionService;
         private readonly FontService _fontService;
         private readonly ColorService _colorService;
+        private readonly ConversionLoggingService _conversionLoggingService;
 
-        public ApiInfoController(ConversionService conversionService, FontService fontService, ColorService colorService) : base(conversionService)
+        public ApiInfoController(ConversionService conversionService, FontService fontService, ColorService colorService, ConversionLoggingService conversionLoggingService) : base(conversionService)
         {
-            _conversionService = conversionService;
             _fontService = fontService;
             _colorService = colorService;
+            _conversionLoggingService = conversionLoggingService;
         }
 
         [HttpGet("fonts/{format}")]
@@ -60,6 +61,16 @@ namespace netscii.Controllers.Api
             {
                 var result = await _colorService.GetColorsAsync();
                 return Ok(result);
+            });
+        }
+
+        [HttpGet("log")]
+        public async Task<IActionResult> GetLogs([FromBody] JsonConversionDto jsonRequest)
+        {
+            return await ExecuteSafe(async () =>
+            {
+                var logs = await _conversionLoggingService.GetLogsAsync(jsonRequest.Period);
+                return Ok(logs);
             });
         }
     }

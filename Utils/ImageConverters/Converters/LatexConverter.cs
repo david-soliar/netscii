@@ -37,13 +37,10 @@ namespace netscii.Utils.ImageConverters.Converters
             var document = new StringBuilder();
             var tex = new StringBuilder();
 
-            if (options.CreateFullDocument)
-            {
-                document.AppendLine("\\documentclass{article}");
-                document.AppendLine("\\usepackage{xcolor}");
-                document.AppendLine($"\\usepackage{{{options.Font}}}");
-                document.AppendLine("\\linespread{0}");
-            }
+            document.AppendLine("\\documentclass{article}");
+            document.AppendLine("\\usepackage{xcolor}");
+            document.AppendLine($"\\usepackage{{{options.Font}}}");
+            document.AppendLine("\\linespread{0}");
 
             if (options.UseBackgroundColor && !string.IsNullOrWhiteSpace(options.Background))
             {
@@ -82,33 +79,27 @@ namespace netscii.Utils.ImageConverters.Converters
                 tex.AppendLine("\n\t\t\t\\newline");
             }
 
-            if (options.CreateFullDocument)
-            {
-                double charWidthCm = 0.2;
-                double charHeightCm = 0.28;
-                double paperWidthCm = charWidthCm * width;
-                double paperHeightCm = charHeightCm * height;
+            double charWidthCm = 0.2;
+            double charHeightCm = 0.28;
+            double paperWidthCm = charWidthCm * width;
+            double paperHeightCm = charHeightCm * height;
 
-                document.AppendLine($"\\usepackage[paperwidth={paperWidthCm}cm, paperheight={paperHeightCm}cm, margin=0pt]{{geometry}}");
+            document.AppendLine($"\\usepackage[paperwidth={paperWidthCm}cm, paperheight={paperHeightCm}cm, margin=0pt]{{geometry}}");
 
-                document.AppendLine("\n\\begin{document}\n");
-                document.AppendLine("\\vbox to \\textheight{");
-                document.AppendLine("\t\\vfill");
-                document.AppendLine("\t\\begin{center}");
-                document.AppendLine("\t\t{\\ttfamily");
-                document.AppendLine("\t\t\t\\setlength{\\baselineskip}{0pt}");
-            }
+            document.AppendLine("\n\\begin{document}\n");
+            document.AppendLine("\\vbox to \\textheight{");
+            document.AppendLine("\t\\vfill");
+            document.AppendLine("\t\\begin{center}");
+            document.AppendLine("\t\t{\\ttfamily");
+            document.AppendLine("\t\t\t\\setlength{\\baselineskip}{0pt}");
 
             document.Append(tex);
 
-            if (options.CreateFullDocument)
-            {
-                document.AppendLine("\t\t}");
-                document.AppendLine("\t\\end{center}");
-                document.AppendLine("\t\\vfill");
-                document.AppendLine("}");
-                document.AppendLine("\\end{document}").AppendLine();
-            }
+            document.AppendLine("\t\t}");
+            document.AppendLine("\t\\end{center}");
+            document.AppendLine("\t\\vfill");
+            document.AppendLine("}");
+            document.AppendLine("\\end{document}").AppendLine();
 
             result.Content = document.ToString();
             return result;

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using netscii.Models;
 
@@ -10,9 +11,11 @@ using netscii.Models;
 namespace netscii.Migrations
 {
     [DbContext(typeof(NetsciiContext))]
-    partial class NetsciiContextModelSnapshot : ModelSnapshot
+    [Migration("20250707175644_AddedLogging")]
+    partial class AddedLogging
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.6");
@@ -49,10 +52,10 @@ namespace netscii.Migrations
                     b.Property<int>("Height")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("OutputLengthBytes")
+                    b.Property<int>("OutputLength")
                         .HasColumnType("INTEGER");
 
-                    b.Property<long>("ProcessingTimeMs")
+                    b.Property<int>("ProcessingTimeMs")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("Timestamp")
@@ -102,7 +105,7 @@ namespace netscii.Migrations
                     b.Property<bool>("Invert")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Platform")
+                    b.Property<string>("OperatingSystem")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
