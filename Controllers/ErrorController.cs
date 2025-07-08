@@ -5,6 +5,7 @@ using netscii.Models.ViewModels;
 
 namespace netscii.Controllers
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ErrorController : Controller
     {
         [Route("/Error")]

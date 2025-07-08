@@ -21,6 +21,11 @@ namespace netscii.Controllers.Api
             _conversionLoggingService = conversionLoggingService;
         }
 
+        /// <summary>
+        /// Gets fonts supported by the specified format.
+        /// </summary>
+        /// <param name="format">The font format to filter by.</param>
+        /// <returns>List of fonts for the format.</returns>
         [HttpGet("fonts/{format}")]
         public async Task<IActionResult> GetFontsByFormat(string format)
         {
@@ -34,6 +39,10 @@ namespace netscii.Controllers.Api
             });
         }
 
+        /// <summary>
+        /// Gets all supported fonts.
+        /// </summary>
+        /// <returns>Dictionary of all fonts grouped by format.</returns>
         [HttpGet("fonts")]
         public async Task<IActionResult> GetFonts()
         {

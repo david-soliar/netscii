@@ -11,11 +11,9 @@ namespace netscii.Controllers.Api
     public class ApiConversionController : BaseController
     {
 
-        public ApiConversionController(ConversionService conversionService) : base(conversionService)
-        {
-        }
+        public ApiConversionController(ConversionService conversionService) : base(conversionService) { }
 
-        [HttpPost]
+        [HttpPost("form")]
         public async Task<IActionResult> ConvertForm([FromRoute] string format, [FromForm] ConversionViewModel request)
         {
             if (IsUnsupportedFormat(format))
@@ -28,7 +26,7 @@ namespace netscii.Controllers.Api
             });
         }
 
-        [HttpPost]
+        [HttpPost("json")]
         [Consumes("application/json")]
         public async Task<IActionResult> ConvertJson([FromRoute] string format, [FromBody] JsonConversionDto jsonRequest)
         {

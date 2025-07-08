@@ -5,6 +5,7 @@ using netscii.Services;
 
 namespace netscii.Controllers.Web
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("log")]
     public class ConversionLogController : BaseController
     {

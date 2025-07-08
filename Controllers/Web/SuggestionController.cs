@@ -6,6 +6,7 @@ using netscii.Services.Factories;
 
 namespace netscii.Controllers.Web
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("suggestions")]
     public class SuggestionController : BaseController
     {

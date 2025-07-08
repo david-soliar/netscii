@@ -8,6 +8,7 @@ using netscii.Utils.ImageConverters.Models;
 
 namespace netscii.Controllers.Web
 {
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("convert/{format}")]
     public class ConversionController : BaseController
     {

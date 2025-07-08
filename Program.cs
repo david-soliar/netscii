@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using netscii.Models;
@@ -8,8 +9,11 @@ using netscii.Services.Factories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSession();
-builder.Services.AddControllers();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+});
 
 builder.Services.AddDbContext<NetsciiContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -31,9 +35,17 @@ builder.Services.AddScoped<SuggestionViewModelFactory>();
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddControllers().AddJsonOptions(options =>
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
 {
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+
+    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "API",
+        Version = "v1"
+    });
 });
 
 var app = builder.Build();
@@ -63,5 +75,11 @@ if (app.Environment.IsDevelopment())
     await dbContext.Database.MigrateAsync();
     DBInitializer.Initialize(dbContext);
 }
+
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API");
+});
 
 app.Run();

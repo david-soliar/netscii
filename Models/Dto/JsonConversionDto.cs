@@ -1,4 +1,6 @@
-﻿namespace netscii.Models.Dto
+﻿using System.Text.Json.Serialization;
+
+namespace netscii.Models.Dto
 {
     public class JsonConversionDto
     {
@@ -8,6 +10,7 @@
         public bool Invert { get; set; } = false;
         public string Font { get; set; } = string.Empty;
         public string Background { get; set; } = string.Empty;
+        [JsonIgnore]
         public bool UseBackgroundColor { get; set; } = false;
         public string Platform { get; set; } = string.Empty;
         public bool UseSmallPalette { get; set; } = false;
