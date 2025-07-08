@@ -36,9 +36,6 @@ namespace netscii.Services.Factories
 
             await Repopulate(model, format);
 
-            model.Platform = model.Platforms.FirstOrDefault(string.Empty);
-            model.Font = model.Fonts.FirstOrDefault(string.Empty);
-
             return model;
         }
 

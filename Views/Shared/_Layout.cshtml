@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - netscii</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
 
     @await RenderSectionAsync("Head", required: false)
 </head>
@@ -51,7 +52,16 @@
 
     <footer class="bg-body-tertiary border-top text-center py-3 mt-auto">
         <div class="container">
-            <small class="text-muted">&copy; netscii - <a asp-controller="Home" asp-action="Index">Home</a></small>
+            <nav aria-label="Footer navigation">
+                <ul class="list-inline d-flex justify-content-center">
+                    <li class="list-inline-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li class="list-inline-item"><a asp-controller="ConversionLog" asp-action="Index">Log</a></li>
+                    <li class="list-inline-item"><a href="https://github.com/david-soliar/netscii" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                </ul>
+            </nav>
+            <small class="text-muted d-block text-center mt-2">
+                &copy; netscii
+            </small>
         </div>
     </footer>
 

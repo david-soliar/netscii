@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using netscii.Controllers.Api;
 using netscii.Models.ViewModels;
 using netscii.Services;
 using netscii.Services.Factories;

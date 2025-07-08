@@ -16,10 +16,15 @@ namespace netscii.Models
 
         public DbSet<ConversionActivity> ConversionActivities { get; set; }
         public DbSet<ConversionParameters> ConversionParameters { get; set; }
-        public DbSet<ConversionAssociation> ConversionAssociations { get; set; }
+
+        public DbSet<Suggestion> Suggestions { get; set; }
+        public DbSet<SuggestionCategory> SuggestionCategories { get; set; }
+        public DbSet<SuggestionCategoryAssociation> SuggestionCategoryAssociations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Color>(entity =>
             {
                 entity.Property(p => p.Name).IsRequired();
@@ -32,6 +37,7 @@ namespace netscii.Models
                 entity.Property(p => p.Format).IsRequired();
             });
 
+
             modelBuilder.Entity<ConversionActivity>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -41,6 +47,11 @@ namespace netscii.Models
                 entity.Property(e => e.Height).IsRequired();
                 entity.Property(e => e.ProcessingTimeMs).IsRequired();
                 entity.Property(e => e.OutputLengthBytes).IsRequired();
+
+                entity.HasOne(e => e.ConversionParameters)
+                      .WithMany(p => p.Activities)
+                      .HasForeignKey(e => e.ConversionParametersId)
+                      .OnDelete(DeleteBehavior.Restrict);
             });
 
             modelBuilder.Entity<ConversionParameters>(entity =>
@@ -49,17 +60,31 @@ namespace netscii.Models
                 entity.Property(e => e.Scale).IsRequired();
             });
 
-            modelBuilder.Entity<ConversionAssociation>(entity =>
+
+            modelBuilder.Entity<Suggestion>(entity =>
             {
-                entity.HasKey(e => new { e.ConversionActivityId, e.ConversionParametersId });
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Text).IsRequired();
+                entity.Property(e => e.CreatedAt).IsRequired();
+            });
 
-                entity.HasOne(e => e.ConversionActivity)
-                      .WithMany(c => c.ConversionAssociation)
-                      .HasForeignKey(e => e.ConversionActivityId);
+            modelBuilder.Entity<SuggestionCategory>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.CategoryName).IsRequired();
+            });
 
-                entity.HasOne(e => e.ConversionParameters)
-                      .WithMany(p => p.ConversionAssociation)
-                      .HasForeignKey(e => e.ConversionParametersId);
+            modelBuilder.Entity<SuggestionCategoryAssociation>(entity =>
+            {
+                entity.HasKey(e => new { e.SuggestionId, e.SuggestionCategoryId });
+
+                entity.HasOne(e => e.Suggestion)
+                      .WithMany(s => s.SuggestionCategoryAssociations)
+                      .HasForeignKey(e => e.SuggestionId);
+
+                entity.HasOne(e => e.SuggestionCategory)
+                      .WithMany(c => c.SuggestionAssociations)
+                      .HasForeignKey(e => e.SuggestionCategoryId);
             });
         }
     }

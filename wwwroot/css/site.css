@@ -1,0 +1,4 @@
+.list-inline-item:not(:last-child)::after {
+    content: " | ";
+    color: darkgray;
+}

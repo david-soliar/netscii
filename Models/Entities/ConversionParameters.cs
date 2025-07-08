@@ -10,6 +10,6 @@
         public bool Invert { get; set; }
         public string Platform { get; set; } = null!;
 
-        public ICollection<ConversionAssociation> ConversionAssociation { get; set; } = new List<ConversionAssociation>();
+        public ICollection<ConversionActivity> Activities { get; set; } = new List<ConversionActivity>();
     }
 }

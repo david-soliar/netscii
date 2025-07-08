@@ -18,15 +18,15 @@ namespace netscii.Repositories
         {
             var cutoff = DateTime.UtcNow - period;
 
+
             return await _context.ConversionActivities
                 .Where(ca => ca.Timestamp >= cutoff)
                 .OrderByDescending(ca => ca.Timestamp)
-                .Include(ca => ca.ConversionAssociation)
-                    .ThenInclude(ca => ca.ConversionParameters)
+                .Include(ca => ca.ConversionParameters)
                 .Select(ca => new LogDto
                 {
                     Activity = ca,
-                    Parameters = ca.ConversionAssociation.Select(a => a.ConversionParameters).FirstOrDefault()
+                    Parameters = ca.ConversionParameters
                 })
                 .ToListAsync();
         }
@@ -55,16 +55,11 @@ namespace netscii.Repositories
                     await _context.SaveChangesAsync();
                 }
 
+                activity.ConversionParametersId = parameters.Id;
                 _context.ConversionActivities.Add(activity);
-                await _context.SaveChangesAsync();
-
-                _context.ConversionAssociations.Add(new ConversionAssociation
-                {
-                    ConversionActivityId = activity.Id,
-                    ConversionParametersId = parameters.Id
-                });
 
                 await _context.SaveChangesAsync();
+
                 await transaction.CommitAsync();
             }
             catch

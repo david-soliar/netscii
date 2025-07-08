@@ -6,8 +6,7 @@
     if (savedTheme) {
         setTheme(savedTheme);
     } else {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setTheme(prefersDark ? 'dark' : 'light');
+        setTheme('dark');
     }
 
     toggleBtn.addEventListener('click', () => {
@@ -26,4 +25,5 @@
 function hideContainer(container) {
     const element = document.querySelector(`#${container}-container`);
     element.style.display = 'none';
+    element.disabled = true;
 }

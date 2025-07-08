@@ -1,8 +1,12 @@
 ﻿@model LogViewModel
 @{
     ViewData["Title"] = "Log";
+    string NoDataHtml = "<span class=\"text-secondary\">Unknown</span>";
 }
 
+@section Head {
+    <link rel='stylesheet' href='/css/conversion-log.css' />
+}
 
 <h1>Conversion Logs</h1>
 
@@ -20,25 +24,25 @@
 <div class="table-responsive">
     <table class="table table-striped table-bordered mt-3">
         <thead class="table-light">
-            <tr>
+            <tr class="text-center align-middle">
                 <th>Timestamp (UTC)</th>
                 <th>Format</th>
                 <th>Width</th>
                 <th>Height</th>
                 <th>Processing Time (ms)</th>
-                <th>Output Length</th>
+                <th>Output Length (bytes)</th>
                 <th>Characters</th>
                 <th>Font</th>
                 <th>Background</th>
                 <th>Scale</th>
                 <th>Invert</th>
-                <th>Operating System</th>
+                <th>Platform</th>
             </tr>
         </thead>
         <tbody>
             @if (Model.Logs == null || !Model.Logs.Any())
             {
-                <tr>
+                <tr class="text-center align-middle">
                     <td colspan="12" class="text-center">No logs found for the selected period.</td>
                 </tr>
             }
@@ -46,20 +50,39 @@
             {
                 foreach (var log in Model.Logs)
                 {
-                    <tr>
-                        <td>@(log.Activity?.Timestamp.ToString("yyyy-MM-dd HH:mm:ss") ?? "no data")</td>
-                        <td>@(log.Activity?.Format ?? "no data")</td>
-                        <td>@(log.Activity?.Width.ToString() ?? "no data")</td>
-                        <td>@(log.Activity?.Height.ToString() ?? "no data")</td>
-                        <td>@(log.Activity?.ProcessingTimeMs.ToString() ?? "no data")</td>
-                        <td>@(log.Activity?.OutputLengthBytes.ToString() ?? "no data")</td>
-                        <td>@(log.Parameters?.Characters ?? "no data")</td>
-                        <td>@(log.Parameters?.Font ?? "no data")</td>
-                        <td>@(string.IsNullOrWhiteSpace(log.Parameters?.Background) ? "no data" : log.Parameters!.Background)</td>
-                        <td>@(log.Parameters?.Scale.ToString() ?? "no data")</td>
-                        <td>@(log.Parameters != null ? (log.Parameters.Invert ? "Yes" : "No") : "no data")</td>
-                        <td>@(log.Parameters?.Platform ?? "no data")</td>
-                    </tr>
+                    @if (log.Activity != null && log.Parameters != null)
+                    {
+                        <tr class="text-center align-middle">
+                            <td>@log.Activity.Timestamp.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                            <td>@log.Activity.Format</td>
+                            <td>@log.Activity.Width</td>
+                            <td>@log.Activity.Height</td>
+                            <td>@log.Activity.ProcessingTimeMs</td>
+                            <td>@log.Activity.OutputLengthBytes</td>
+                            <td>
+                                @(string.IsNullOrWhiteSpace(log.Parameters.Characters) ?
+                                    @Html.Raw(NoDataHtml) :
+                                    log.Parameters.Characters)
+                            </td>
+                            <td>
+                                @(string.IsNullOrWhiteSpace(log.Parameters.Font) ?
+                                    @Html.Raw(NoDataHtml) :
+                                    log.Parameters.Font)
+                            </td>
+                            <td>
+                                @(string.IsNullOrWhiteSpace(log.Parameters.Background) ?
+                                    @Html.Raw(NoDataHtml) :
+                                    log.Parameters.Background)
+                            </td>
+                            <td>@log.Parameters.Scale</td>
+                            <td>@(log.Parameters.Invert ? "Yes" : "No")</td>
+                            <td>
+                                @(string.IsNullOrWhiteSpace(log.Parameters.Platform) ?
+                                    @Html.Raw(NoDataHtml) :
+                                    log.Parameters.Platform)
+                            </td>
+                        </tr>
+                    }
                 }
             }
         </tbody>

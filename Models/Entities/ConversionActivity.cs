@@ -10,7 +10,7 @@
         public long ProcessingTimeMs { get; set; }
         public int OutputLengthBytes { get; set; }
 
-
-        public ICollection<ConversionAssociation> ConversionAssociation { get; set; } = new List<ConversionAssociation>();
+        public int ConversionParametersId { get; set; }
+        public ConversionParameters ConversionParameters { get; set; } = null!;
     }
 }

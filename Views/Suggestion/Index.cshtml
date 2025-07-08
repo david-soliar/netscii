@@ -1,0 +1,37 @@
+﻿@model SuggestionViewModel
+@using System.Linq
+@{
+    ViewData["Title"] = "Suggestions";
+}
+
+<form method="post" enctype="multipart/form-data" asp-controller="Conversion" asp-action="Index">
+    @foreach (var category in Model.Categories)
+    {
+        <label>
+            <input type="checkbox" name="selectedCategories" value="@category" selected="@(Model.SelectedCategories.Contains(category) ? "selected" : null)" />
+            @category
+        </label>
+    }
+
+    <br />
+
+    <label for="text">Text:</label>
+    <input type="text" id="text" name="text" />
+
+    <br />
+    <button type="submit">Submit</button>
+</form>
+
+@if (Model.Suggestions != null && Model.Suggestions.Count() > 0 ) {
+    @foreach (var suggestion in Model.Suggestions)
+    {
+        <div>
+            <span>
+                @suggestion.CreatedAt
+            </span>
+            <span>
+                @suggestion.Text
+            </span>
+        </div>
+    }
+}

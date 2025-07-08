@@ -60,5 +60,5 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-// examples, log aktivity/historia, suggestions
-// abstrahovat priame acces z _layout do util nejako
+// examples, suggestions, testy - py,
+// abstrahovat priame access z _layout do util nejako

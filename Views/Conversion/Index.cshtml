@@ -14,24 +14,24 @@
 
 <form method="post" enctype="multipart/form-data" asp-controller="Conversion" asp-action="Index" class="row g-3 align-items-start justify-content-between">
     <div class="col-md-6">
-        <div id="image-container" class="mb-3">
+        <fieldset id="image-container" class="mb-3">
             <label for="image" class="form-label">Select Image:</label>
             <input type="file" id="image" name="image" accept="image/*" class="form-control" required />
-        </div>
+        </fieldset>
 
-        <div id="characters-container" class="mb-3">
+        <fieldset id="characters-container" class="mb-3">
             <label for="characters" class="form-label">Characters:</label>
             <input type="text" id="characters" name="characters" value="@Model.Characters" class="form-control" />
             <div class="form-text">Characters used for conversion</div>
-        </div>
+        </fieldset>
 
-        <div id="scale-container" class="mb-3">
+        <fieldset id="scale-container" class="mb-3">
             <label for="scale" class="form-label">Scale (e.g., 8):</label>
             <input type="number" id="scale" name="scale" min="1" value="@Model.Scale" class="form-control" />
-        </div>
+        </fieldset>
 
-        <div id="font-platform-container" class="mb-3">
-            <div id="font-container">
+        <fieldset id="font-platform-container" class="mb-3">
+            <fieldset id="font-container">
                 <label for="font" class="form-label">Font:</label>
                 <select id="font" name="font" class="form-select">
                     @foreach (var font in Model.Fonts)
@@ -39,9 +39,9 @@
                         <option style="font-family: @font;" value="@font" selected="@(font == Model.Font ? "selected" : null)">@font</option>
                     }
                 </select>
-            </div>
+            </fieldset>
 
-            <div id="platform-container">
+            <fieldset id="platform-container">
                 <label for="platform" class="form-label">Target Operating System:</label>
                 <select id="platform" name="platform" class="form-select">
                     @foreach (var operatingSystem in Model.Platforms)
@@ -49,13 +49,13 @@
                         <option value="@operatingSystem" selected="@(operatingSystem == Model.Platform ? "selected" : null)">@operatingSystem</option>
                     }
                 </select>
-            </div>
-        </div>
+            </fieldset>
+        </fieldset>
     </div>
 
-    <div class="col-md-4">
-        <div class="mb-4">
-            <span class="form-label d-block">Options:</span>
+    <fieldset class="col-md-4">
+        <fieldset class="mb-4">
+            <legend class="form-label d-block">Options:</legend>
             <div id="invert-container" class="form-check">
                 <input type="checkbox" id="invert" name="invert" class="form-check-input" value="true" @(Model.Invert ? "checked" : "") />
                 <label for="invert" class="form-check-label">Invert colors</label>
@@ -64,9 +64,9 @@
                 <input type="checkbox" id="useSmallPalette" name="useSmallPalette" class="form-check-input" value="true" @(Model.UseSmallPalette ? "checked" : "") />
                 <label for="useSmallPalette" class="form-check-label">Use 256 colors (old systems)</label>
             </div>
-        </div>
+        </fieldset>
 
-        <div id="background-container" class="mb-2">
+        <fieldset id="background-container" class="mb-2">
             <div class="mb-3">
                 <label for="background" class="form-label">Background Color: (<span id="colorValueDisplay" style="font-weight: normal;"></span>)</label>
                 <input type="color" id="background" name="background" value="@(string.IsNullOrWhiteSpace(Model.Background) ? "#000000" : Model.Background)" class="form-control form-control-color" title="Choose background color" @(Model.UseBackgroundColor ? "" : "disabled") />
@@ -76,8 +76,8 @@
                 <input type="checkbox" id="useBackgroundColor" name="useBackgroundColor" class="form-check-input" value="true" @(Model.UseBackgroundColor ? "checked" : "") />
                 <label for="useBackgroundColor" class="form-check-label">Use Custom Color</label>
             </div>
-        </div>
-    </div>
+        </fieldset>
+    </fieldset>
 
 
     <div class="d-flex justify-content-end gap-2 mt-4">
