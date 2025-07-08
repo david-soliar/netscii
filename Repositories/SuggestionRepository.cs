@@ -13,21 +13,30 @@ namespace netscii.Repositories
             _context = context;
         }
 
-        public async Task AddSuggestionAsync(Suggestion suggestion, List<int> categoryIds)
+        public async Task AddSuggestionAsync(string text, List<string> categories)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {
+                var suggestion = new Suggestion
+                {
+                    Text = text
+                };
+
                 _context.Suggestions.Add(suggestion);
                 await _context.SaveChangesAsync();
 
-                foreach (var categoryId in categoryIds)
+                var categoryEntities = await _context.SuggestionCategories
+                    .Where(c => categories.Contains(c.CategoryName))
+                    .ToListAsync();
+
+                foreach (var category in categoryEntities)
                 {
                     _context.SuggestionCategoryAssociations.Add(new SuggestionCategoryAssociation
                     {
                         SuggestionId = suggestion.Id,
-                        SuggestionCategoryId = categoryId
+                        SuggestionCategoryId = category.Id
                     });
                 }
 

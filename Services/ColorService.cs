@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
-using netscii.Models;
-
+using netscii.Repositories;
 
 namespace netscii.Services
 {

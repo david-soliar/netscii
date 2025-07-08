@@ -17,12 +17,14 @@ builder.Services.AddScoped<FontService>();
 builder.Services.AddScoped<ColorService>();
 builder.Services.AddScoped<ConversionService>();
 builder.Services.AddScoped<ConversionLoggingService>();
+builder.Services.AddScoped<SuggestionService>();
 
 builder.Services.AddScoped<ConversionViewModelFactory>();
 
 builder.Services.AddScoped<FontRepository>();
 builder.Services.AddScoped<ColorRepository>();
 builder.Services.AddScoped<ConversionLoggingRepository>();
+builder.Services.AddScoped<SuggestionRepository>();
 
 builder.Services.AddMemoryCache();
 
@@ -60,5 +62,5 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-// examples, suggestions, testy - py,
-// abstrahovat priame access z _layout do util nejako
+// examples, suggestions, testy - py, logs ked je all hadze error
+// abstrahovat priame access z _layout do util nejako, pridat cache do sugg service a logs, captcha do add suggestion

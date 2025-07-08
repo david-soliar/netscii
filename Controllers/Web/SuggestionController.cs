@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using netscii.Models.Entities;
+using netscii.Exceptions;
 using netscii.Models.ViewModels;
 using netscii.Services;
 
@@ -16,45 +16,67 @@ namespace netscii.Controllers.Web
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery(Name = "SelectedCategories")] List<string> categories)
         {
-            List<string> categories = await _suggestionService.GetCategoryNamesAsync();
-            var suggestions = await _suggestionService.GetAllSuggestionsAsync();
+            return await ExecuteSafe(async () =>
+                {
+                    var allCategories = await _suggestionService.GetCategoryNamesAsync();
 
-            var model = new SuggestionViewModel
-            {
-                Categories = categories,
-                SelectedCategories = categories,
-                Suggestions = suggestions
-            };
+                    bool isInitialRequest = !Request.Query.ContainsKey("SelectedCategories");
 
-            return View(model);
+                    var selectedCategories = isInitialRequest
+                        ? allCategories
+                        : (categories.Where(c => !string.IsNullOrWhiteSpace(c)).ToList() ?? new List<string>());
+
+                    var suggestions = await _suggestionService.GetSuggestionsByCategoriesAsync(selectedCategories);
+
+                    var model = new SuggestionViewModel
+                    {
+                        Categories = allCategories,
+                        SelectedCategories = selectedCategories,
+                        Suggestions = suggestions
+                    };
+                    return View(model);
+                },
+                renderErrorView: true
+            );
         }
 
+        [Route("add")]
         [HttpGet]
-        public async Task<IActionResult> Index([FromBody] SuggestionViewModel model)
+        public async Task<IActionResult> AddSuggestion()
         {
-            List<string> categories = await _suggestionService.GetCategoryNamesAsync();
-            var suggestions = await _suggestionService.GetSuggestionsByCategoriesAsync(model.Categories);
-
-            model.Categories = categories;
-            model.Suggestions = suggestions;
-
-            return View(model);
+            return await ExecuteSafe(async () =>
+                {
+                    var allCategories = await _suggestionService.GetCategoryNamesAsync();
+                    var model = new SuggestionViewModel
+                    {
+                        Categories = allCategories,
+                        SelectedCategories = allCategories
+                    };
+                    return View(model);
+                },
+                renderErrorView: true
+            );
         }
 
+        [Route("add")]
         [HttpPost]
-        public async Task<IActionResult> AddSuggestion([FromBody] SuggestionViewModel model)
+        public async Task<IActionResult> AddSuggestion(SuggestionViewModel model)
         {
-            List<string> categories = await _suggestionService.GetCategoryNamesAsync();
-            var suggestions = await _suggestionService.GetSuggestionsByCategoriesAsync(model.Categories);
+            return await ExecuteSafe(async () =>
+                {
+                    if (model.SelectedCategories == null || !model.SelectedCategories.Any())
+                        throw new SuggestionException("At least one category must be selected.");
 
-            model.Categories = categories;
-            model.Suggestions = suggestions;
+                    if (string.IsNullOrEmpty(model.Text))
+                        throw new SuggestionException("Suggestion text must not be empty.");
 
-            await _suggestionService.AddSuggestionAsync(model.Text, model.SelectedCategories);
-
-            return View(model);
+                    await _suggestionService.AddSuggestionAsync(model.Text, model.SelectedCategories);
+                    return RedirectToAction("Index");
+                },
+                renderErrorView: true
+            );
         }
     }
 }

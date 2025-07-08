@@ -1,0 +1,51 @@
+﻿@model SuggestionViewModel
+@{
+    ViewData["Title"] = "Add Suggestion";
+}
+
+<h1 class="mb-4">Add Suggestion</h1>
+
+<form id="category-selector" method="post" asp-controller="Suggestion" asp-action="AddSuggestion" class="card p-4 shadow-sm">
+    <div class="mb-3">
+        <label class="form-label d-block">Select categories:</label>
+        <div class="d-flex flex-wrap gap-2">
+            @for (int i = 0; i < Model.Categories.Count; i++)
+            {
+                var category = Model.Categories[i];
+                var isChecked = Model.SelectedCategories.Contains(category);
+
+                <input type="checkbox"
+                       class="btn-check"
+                       name="SelectedCategories"
+                       value="@category"
+                       id="cat-btn-@i"
+                       autocomplete="off"
+                @(isChecked ? "checked" : null) />
+
+                <label class="btn @(isChecked ? "btn-success" : "btn-outline-danger")"
+                       for="cat-btn-@i">
+                    @category
+                </label>
+            }
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label for="textAreaInput" class="form-label">Suggestion Text:</label>
+        <textarea class="form-control"
+                  id="textAreaInput"
+                  name="Text"
+                  placeholder="Enter your suggestion here..."
+                  rows="3"
+                  style="overflow:hidden;resize:none;">@Model.Text</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i> Add Suggestion
+    </button>
+</form>
+
+
+@section Scripts {
+    <script src='/js/suggestion-form.js'></script>
+}

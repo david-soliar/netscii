@@ -77,6 +77,20 @@ namespace netscii.Models
                     context.Fonts.AddRange(fonts);
                 }
 
+                if (!context.SuggestionCategories.Any())
+                {
+                    var categories = new[]
+                    {
+                        new SuggestionCategory { CategoryName = "General" },
+                        new SuggestionCategory { CategoryName = "Bug" },
+                        new SuggestionCategory { CategoryName = "Feature Request" },
+                        new SuggestionCategory { CategoryName = "UI" },
+                        new SuggestionCategory { CategoryName = "Performance" }
+                    };
+                    context.SuggestionCategories.AddRange(categories);
+                }
+
+
                 context.SaveChanges();
             }
             catch (Exception ex)

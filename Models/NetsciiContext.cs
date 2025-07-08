@@ -50,8 +50,7 @@ namespace netscii.Models
 
                 entity.HasOne(e => e.ConversionParameters)
                       .WithMany(p => p.Activities)
-                      .HasForeignKey(e => e.ConversionParametersId)
-                      .OnDelete(DeleteBehavior.Restrict);
+                      .HasForeignKey(e => e.ConversionParametersId);
             });
 
             modelBuilder.Entity<ConversionParameters>(entity =>

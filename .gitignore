@@ -366,3 +366,4 @@ FodyWeavers.xsd
 #*.db	# maybe keep this
 *.db-wal
 *.db-shm
+*.db

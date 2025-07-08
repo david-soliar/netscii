@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using netscii.Models;
 
@@ -10,9 +11,11 @@ using netscii.Models;
 namespace netscii.Migrations
 {
     [DbContext(typeof(NetsciiContext))]
-    partial class NetsciiContextModelSnapshot : ModelSnapshot
+    [Migration("20250708084015_Suggestions")]
+    partial class Suggestions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.6");
@@ -176,7 +179,7 @@ namespace netscii.Migrations
                     b.HasOne("netscii.Models.Entities.ConversionParameters", "ConversionParameters")
                         .WithMany("Activities")
                         .HasForeignKey("ConversionParametersId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("ConversionParameters");
