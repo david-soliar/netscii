@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using netscii.Constants;
 using netscii.Exceptions;
 using netscii.Models.ViewModels;
 using netscii.Services;
@@ -67,10 +68,10 @@ namespace netscii.Controllers.Web
             return await ExecuteSafe(async () =>
                 {
                     if (model.SelectedCategories == null || !model.SelectedCategories.Any())
-                        throw new SuggestionException("At least one category must be selected.");
+                        throw new SuggestionException(ExceptionMessages.NoCategory);
 
                     if (string.IsNullOrEmpty(model.Text))
-                        throw new SuggestionException("Suggestion text must not be empty.");
+                        throw new SuggestionException(ExceptionMessages.NoText);
 
                     await _suggestionService.AddSuggestionAsync(model.Text, model.SelectedCategories);
                     return RedirectToAction("Index");

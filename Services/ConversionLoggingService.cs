@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using netscii.Constants;
 using netscii.Models.Dto;
 using netscii.Models.Entities;
 using netscii.Repositories;
@@ -13,19 +14,6 @@ namespace netscii.Services
         public ConversionLoggingService(ConversionLoggingRepository repository)
         {
             _repository = repository;
-        }
-
-        private TimeSpan ParsePeriod(string period)
-        {
-            return period switch
-            {
-                "24h" => TimeSpan.FromHours(24),
-                "7d" => TimeSpan.FromDays(7),
-                "30d" => TimeSpan.FromDays(30),
-                "1y" => TimeSpan.FromDays(365),
-                "all" => TimeSpan.MaxValue,
-                _ => TimeSpan.FromDays(7)
-            };
         }
 
         public async Task LogAsync(string format, ConverterResult converterResult, ConverterOptions converterOptions)
@@ -55,7 +43,7 @@ namespace netscii.Services
 
         public async Task<List<LogDto>> GetLogsAsync(string period)
         {
-            return await _repository.GetLogsAsync(ParsePeriod(period));
+            return await _repository.GetLogsAsync(ConversionConstants.Periods.GetValueOrDefault(period, TimeSpan.FromDays(7)));
         }
 
         public async Task<List<LogDto>> GetLogsAsync(int period)

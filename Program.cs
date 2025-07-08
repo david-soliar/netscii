@@ -13,6 +13,11 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddDbContext<NetsciiContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<FontRepository>();
+builder.Services.AddScoped<ColorRepository>();
+builder.Services.AddScoped<ConversionLoggingRepository>();
+builder.Services.AddScoped<SuggestionRepository>();
+
 builder.Services.AddScoped<FontService>();
 builder.Services.AddScoped<ColorService>();
 builder.Services.AddScoped<ConversionService>();
@@ -20,11 +25,6 @@ builder.Services.AddScoped<ConversionLoggingService>();
 builder.Services.AddScoped<SuggestionService>();
 
 builder.Services.AddScoped<ConversionViewModelFactory>();
-
-builder.Services.AddScoped<FontRepository>();
-builder.Services.AddScoped<ColorRepository>();
-builder.Services.AddScoped<ConversionLoggingRepository>();
-builder.Services.AddScoped<SuggestionRepository>();
 
 builder.Services.AddMemoryCache();
 
@@ -42,9 +42,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseRouting();
-
 app.UseAuthorization();
 
 app.MapStaticAssets();
@@ -62,5 +60,5 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-// examples, suggestions, testy - py, logs ked je all hadze error
-// abstrahovat priame access z _layout do util nejako, pridat cache do sugg service a logs, captcha do add suggestion
+// examples, testy - py, errory nejako inak
+// captcha do add suggestion

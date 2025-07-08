@@ -52,7 +52,7 @@ namespace netscii.Utils.ImageConverters
 
             result.ProcessingTimeMs = stopwatch.ElapsedMilliseconds;
             result.OutputLengthBytes = Encoding.UTF8.GetByteCount(result.Content);
-            result.MimeType = MimeTypes.TryGetValue(format, out var mt) ? mt : "application/x-unknown";
+            result.MimeType = MimeTypes.GetValueOrDefault(format, "application/x-unknown");
             result.Format = format;
 
             return result;

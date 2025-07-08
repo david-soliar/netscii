@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using netscii.Constants;
 using netscii.Models.Dto;
 using netscii.Models.ViewModels;
 using netscii.Services;
-
 
 namespace netscii.Controllers.Api
 {
@@ -19,7 +19,7 @@ namespace netscii.Controllers.Api
         public async Task<IActionResult> ConvertForm([FromRoute] string format, [FromForm] ConversionViewModel request)
         {
             if (IsUnsupportedFormat(format))
-                return ErrorResponse(400, "Unsupported format");
+                return ErrorResponse(400, ExceptionMessages.UnsupportedFormat);
 
             return await ExecuteSafe(async () =>
             {
@@ -33,10 +33,10 @@ namespace netscii.Controllers.Api
         public async Task<IActionResult> ConvertJson([FromRoute] string format, [FromBody] JsonConversionDto jsonRequest)
         {
             if (IsUnsupportedFormat(format))
-                return ErrorResponse(400, "Unsupported format");
+                return ErrorResponse(400, ExceptionMessages.UnsupportedFormat);
 
             if (string.IsNullOrEmpty(jsonRequest.Image))
-                return ErrorResponse(400, "Image is required.");
+                return ErrorResponse(400, ExceptionMessages.ImageRequired);
 
             return await ExecuteSafe(async () =>
             {

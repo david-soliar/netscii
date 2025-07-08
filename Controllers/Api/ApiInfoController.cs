@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using netscii.Constants;
 using netscii.Models.Dto;
 using netscii.Services;
-
 
 namespace netscii.Controllers.Api
 {
@@ -25,7 +25,7 @@ namespace netscii.Controllers.Api
         public async Task<IActionResult> GetFontsByFormat(string format)
         {
             if (IsUnsupportedFormat(format))
-                return ErrorResponse(400, "Unsupported format");
+                return ErrorResponse(400, ExceptionMessages.UnsupportedFormat);
 
             return await ExecuteSafe(async () =>
             {

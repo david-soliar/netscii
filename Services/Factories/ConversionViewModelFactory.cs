@@ -1,6 +1,5 @@
-﻿using netscii.Models.ViewModels;
-using netscii.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using netscii.Constants;
+using netscii.Models.ViewModels;
 
 
 namespace netscii.Services.Factories
@@ -18,15 +17,7 @@ namespace netscii.Services.Factories
 
         public async Task<ConversionViewModel> CreateWithDefaults(string format)
         {
-            string characters = format.ToLowerInvariant() switch
-            {
-                "html" => "%#*+=-:.",
-                "svg" => "%#*+=-:.",
-                "txt" => "#$023456789?Labdeghnopqu_",
-                "latex" => "MNHUCIi;,.",
-                "rtf" => "%#+=-:.",
-                _ => string.Empty
-            };
+            string characters = ConversionConstants.Characters.GetValueOrDefault(format, string.Empty);
 
             var model = new ConversionViewModel
             {

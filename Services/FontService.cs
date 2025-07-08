@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using netscii.Constants;
 using netscii.Repositories;
 
 namespace netscii.Services
@@ -6,7 +7,6 @@ namespace netscii.Services
     public class FontService
     {
         private readonly IMemoryCache _cache;
-        private const string BaseCacheKey = "Fonts";
         private readonly FontRepository _fontRepository;
 
         public FontService(IMemoryCache cache, FontRepository fontRepository)
@@ -17,22 +17,21 @@ namespace netscii.Services
 
         public async Task<List<string>> GetFontsByFormatAsync(string format)
         {
-            string CacheKey = BaseCacheKey + format;
-            if (!_cache.TryGetValue(CacheKey, out var cached) || cached is not List<string> result)
+            string cacheKey = CacheKeys.BaseFont + format;
+            if (!_cache.TryGetValue(cacheKey, out var cached) || cached is not List<string> result)
             {
                 result = await _fontRepository.GetFontsByFormatAsync(format);
-                _cache.Set(CacheKey, result, TimeSpan.FromHours(1));
+                _cache.Set(cacheKey, result, TimeSpan.FromHours(1));
             }
             return result;
         }
 
         public async Task<Dictionary<string, List<string>>> GetFontsAllAsync()
         {
-            string CacheKey = BaseCacheKey + "All";
-            if (!_cache.TryGetValue(CacheKey, out var cached) || cached is not Dictionary<string, List<string>> result)
+            if (!_cache.TryGetValue(CacheKeys.AllFonts, out var cached) || cached is not Dictionary<string, List<string>> result)
             {
                 result = await _fontRepository.GetFontsAllAsync();
-                _cache.Set(CacheKey, result, TimeSpan.FromHours(1));
+                _cache.Set(CacheKeys.AllFonts, result, TimeSpan.FromHours(1));
             }
             return result;
         }

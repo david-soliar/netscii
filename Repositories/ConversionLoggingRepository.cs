@@ -16,18 +16,18 @@ namespace netscii.Repositories
 
         public async Task<List<LogDto>> GetLogsAsync(TimeSpan period)
         {
-            var cutoff = DateTime.UtcNow - period;
-
-
-            return await _context.ConversionActivities
-                .Where(ca => ca.Timestamp >= cutoff)
-                .OrderByDescending(ca => ca.Timestamp)
+            IQueryable<ConversionActivity> query = _context.ConversionActivities
                 .Include(ca => ca.ConversionParameters)
-                .Select(ca => new LogDto
-                {
-                    Activity = ca,
-                    Parameters = ca.ConversionParameters
-                })
+                .OrderByDescending(ca => ca.Timestamp);
+
+            if (period != TimeSpan.MaxValue)
+            {
+                var cutoff = DateTime.UtcNow - period;
+                query = query.Where(ca => ca.Timestamp >= cutoff);
+            }
+
+            return await query
+                .Select(ca => new LogDto { Activity = ca, Parameters = ca.ConversionParameters })
                 .ToListAsync();
         }
 

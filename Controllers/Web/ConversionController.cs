@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using netscii.Constants;
 using netscii.Models.ViewModels;
 using netscii.Services;
 using netscii.Services.Factories;
@@ -21,7 +22,7 @@ namespace netscii.Controllers.Web
         public async Task<IActionResult> Index([FromRoute] string format)
         {
             if (IsUnsupportedFormat(format))
-                return ErrorResponse(400, "Unsupported format");
+                return ErrorResponse(400, ExceptionMessages.UnsupportedFormat);
 
             return await ExecuteSafe(async () =>
                 {
@@ -36,7 +37,7 @@ namespace netscii.Controllers.Web
         public async Task<IActionResult> Index([FromRoute] string format, ConversionViewModel model)
         {
             if (IsUnsupportedFormat(format))
-                return ErrorResponse(400, "Unsupported format");
+                return ErrorResponse(400, ExceptionMessages.UnsupportedFormat);
 
             return await ExecuteSafe(async () =>
                 {

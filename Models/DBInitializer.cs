@@ -46,7 +46,7 @@ namespace netscii.Models
                 {
                     var fonts = new[]
                     {
-                        new Font { Format = "html", Name = "monospace" },       //pridat alias pre page rendering
+                        new Font { Format = "html", Name = "monospace" },
                         new Font { Format = "html", Name = "'Courier', monospace" },
                         new Font { Format = "html", Name = "'Courier New', monospace" },
                         new Font { Format = "html", Name = "'Monaco', monospace" },

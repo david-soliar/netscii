@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Microsoft.Extensions.Options;
+﻿using netscii.Constants;
 using netscii.Models.Dto;
 using netscii.Models.ViewModels;
 using netscii.Utils.ImageConverters;
@@ -62,7 +61,7 @@ namespace netscii.Services
 
         public List<string> SupportedFormats()
         {
-            return ConverterDispatcher.Converters.Keys.ToList();
+            return ConversionConstants.Formats.ToList();
         }
 
         public IReadOnlyList<string> SupportedPlatforms()

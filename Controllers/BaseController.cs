@@ -3,6 +3,7 @@ using netscii.Models.ViewModels;
 using netscii.Services;
 using netscii.Utils.ImageConverters.Exceptions;
 using netscii.Exceptions;
+using netscii.Constants;
 
 namespace netscii.Controllers
 {
@@ -19,7 +20,7 @@ namespace netscii.Controllers
 
         protected bool IsUnsupportedFormat(string format) => !_formats.Contains(format);
 
-        protected async Task<IActionResult> ExecuteSafe(Func<Task<IActionResult>> operation, int errorCode = 500, string errorMessage = "Internal server error", bool renderErrorView = false)
+        protected async Task<IActionResult> ExecuteSafe(Func<Task<IActionResult>> operation, int errorCode = 500, string errorMessage = ExceptionMessages.InternalError, bool renderErrorView = false)
         {
             try
             {

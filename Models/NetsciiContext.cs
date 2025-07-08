@@ -6,10 +6,7 @@ namespace netscii.Models
 {
     public class NetsciiContext : DbContext
     {
-        public NetsciiContext(DbContextOptions<NetsciiContext> options)
-            : base(options)
-        {
-        }
+        public NetsciiContext(DbContextOptions<NetsciiContext> options) : base(options) { }
 
         public DbSet<Color> Colors { get; set; }
         public DbSet<Font> Fonts { get; set; }

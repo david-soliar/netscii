@@ -15,8 +15,7 @@ namespace netscii.Repositories
         public async Task<Dictionary<string, string>> GetColorsAsync()
         {
             return await _context.Colors
-                                 .ToDictionaryAsync(c => c.Name, c => c.Hex);
+                .ToDictionaryAsync(c => c.Name, c => c.Hex);
         }
     }
-
 }

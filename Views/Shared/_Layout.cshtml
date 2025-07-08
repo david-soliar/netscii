@@ -3,7 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
     <title>@ViewData["Title"] - netscii</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
 
@@ -28,7 +30,7 @@
                             <a class="nav-link @(string.IsNullOrEmpty(currentFormat) ? "active" : "")" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        @foreach (var format in netscii.Utils.ImageConverters.ConverterDispatcher.Converters.Keys.ToList())
+                        @foreach (var format in netscii.Constants.ConversionConstants.Formats)
                         {
                             <li class="nav-item">
                                 <a class="nav-link @(currentFormat == format ? "active" : "")"
