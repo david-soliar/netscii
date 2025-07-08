@@ -7,6 +7,7 @@ using netscii.Services.Factories;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSession();
 builder.Services.AddControllers();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
@@ -23,8 +24,10 @@ builder.Services.AddScoped<ColorService>();
 builder.Services.AddScoped<ConversionService>();
 builder.Services.AddScoped<ConversionLoggingService>();
 builder.Services.AddScoped<SuggestionService>();
+builder.Services.AddScoped<CaptchaService>();
 
 builder.Services.AddScoped<ConversionViewModelFactory>();
+builder.Services.AddScoped<SuggestionViewModelFactory>();
 
 builder.Services.AddMemoryCache();
 
@@ -36,11 +39,12 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
     app.UseHsts();
-}
 
+app.UseExceptionHandler("/Error");
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
+
+app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
@@ -52,13 +56,12 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}");
 
-using (var scope = app.Services.CreateScope())
+if (app.Environment.IsDevelopment())
 {
+    using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<NetsciiContext>();
+    await dbContext.Database.MigrateAsync();
     DBInitializer.Initialize(dbContext);
 }
 
 app.Run();
-
-// examples, testy - py, errory nejako inak
-// captcha do add suggestion

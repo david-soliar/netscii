@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using netscii.Models.Entities;
-
+﻿using netscii.Models.Entities;
 
 namespace netscii.Models
 {
@@ -10,10 +8,6 @@ namespace netscii.Models
         {
             try
             {
-
-                context.Database.Migrate();
-
-
                 if (!context.Colors.Any())
                 {
                     var colors = new[]
@@ -95,7 +89,7 @@ namespace netscii.Models
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message); //toto by mal byt log
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }

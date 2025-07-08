@@ -15,7 +15,7 @@ namespace netscii.Services.Factories
             _conversionService = conversionService;
         }
 
-        public async Task<ConversionViewModel> CreateWithDefaults(string format)
+        public async Task<ConversionViewModel> CreateWithDefaultsAsync(string format)
         {
             string characters = ConversionConstants.Characters.GetValueOrDefault(format, string.Empty);
 
@@ -25,12 +25,12 @@ namespace netscii.Services.Factories
                 Characters = characters
             };
 
-            await Repopulate(model, format);
+            await RepopulateAsync(model, format);
 
             return model;
         }
 
-        public async Task Repopulate(ConversionViewModel model, string format)
+        public async Task RepopulateAsync(ConversionViewModel model, string format)
         {
             model.Platforms = _conversionService.SupportedPlatforms().ToList();
             model.Fonts = await _fontService.GetFontsByFormatAsync(format);

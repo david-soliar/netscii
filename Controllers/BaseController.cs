@@ -2,7 +2,6 @@
 using netscii.Models.ViewModels;
 using netscii.Services;
 using netscii.Utils.ImageConverters.Exceptions;
-using netscii.Exceptions;
 using netscii.Constants;
 
 namespace netscii.Controllers
@@ -26,7 +25,7 @@ namespace netscii.Controllers
             {
                 return await operation();
             }
-            catch (Exception ex) when (ex is ConverterException || ex is SuggestionException)
+            catch (ConverterException ex)
             {
                 Console.WriteLine($"[ERROR] {ex.GetType().Name}: {ex.Message}");
                 Console.WriteLine(ex.StackTrace);

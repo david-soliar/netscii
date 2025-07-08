@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using netscii.Constants;
-using netscii.Exceptions;
 using netscii.Models.ViewModels;
 using netscii.Services;
+using netscii.Services.Factories;
 
 namespace netscii.Controllers.Web
 {
@@ -10,10 +10,18 @@ namespace netscii.Controllers.Web
     public class SuggestionController : BaseController
     {
         private readonly SuggestionService _suggestionService;
+        private readonly SuggestionViewModelFactory _viewModelFactory;
 
-        public SuggestionController(ConversionService conversionService, SuggestionService suggestionService) : base(conversionService)
+        public SuggestionController(ConversionService conversionService, SuggestionService suggestionService, SuggestionViewModelFactory viewModelFactory) : base(conversionService)
         {
             _suggestionService = suggestionService;
+            _viewModelFactory = viewModelFactory;
+        }
+
+        private bool IsCaptchaValid(SuggestionViewModel model)
+        {
+            var expectedCaptcha = HttpContext.Session.GetString("CaptchaCode") ?? "";
+            return string.Equals(model.CaptchaCode, expectedCaptcha, StringComparison.OrdinalIgnoreCase);
         }
 
         [HttpGet]
@@ -21,22 +29,14 @@ namespace netscii.Controllers.Web
         {
             return await ExecuteSafe(async () =>
                 {
-                    var allCategories = await _suggestionService.GetCategoryNamesAsync();
-
                     bool isInitialRequest = !Request.Query.ContainsKey("SelectedCategories");
 
+                    var allCategories = await _suggestionService.GetCategoryNamesAsync();
                     var selectedCategories = isInitialRequest
                         ? allCategories
                         : (categories.Where(c => !string.IsNullOrWhiteSpace(c)).ToList() ?? new List<string>());
 
-                    var suggestions = await _suggestionService.GetSuggestionsByCategoriesAsync(selectedCategories);
-
-                    var model = new SuggestionViewModel
-                    {
-                        Categories = allCategories,
-                        SelectedCategories = selectedCategories,
-                        Suggestions = suggestions
-                    };
+                    var model = await _viewModelFactory.CreateWithSuggestionsAsync(selectedCategories);
                     return View(model);
                 },
                 renderErrorView: true
@@ -50,11 +50,11 @@ namespace netscii.Controllers.Web
             return await ExecuteSafe(async () =>
                 {
                     var allCategories = await _suggestionService.GetCategoryNamesAsync();
-                    var model = new SuggestionViewModel
-                    {
-                        Categories = allCategories,
-                        SelectedCategories = allCategories
-                    };
+                    var model = await _viewModelFactory.CreateWithCaptchaAsync(allCategories);
+
+                    HttpContext.Session.SetString("CaptchaCode", model.CaptchaCode);
+                    model.CaptchaCode = string.Empty;
+
                     return View(model);
                 },
                 renderErrorView: true
@@ -67,11 +67,31 @@ namespace netscii.Controllers.Web
         {
             return await ExecuteSafe(async () =>
                 {
+                    if (!IsCaptchaValid(model))
+                    {
+                        await _viewModelFactory.RepopulateCaptchaAsync(model);
+                       
+                        HttpContext.Session.SetString("CaptchaCode", model.CaptchaCode);
+                        model.CaptchaCode = string.Empty;
+
+                        model.CaptchaMessage = ExceptionMessages.BadCaptcha;
+
+                        return View(model);
+                    }
+
                     if (model.SelectedCategories == null || !model.SelectedCategories.Any())
-                        throw new SuggestionException(ExceptionMessages.NoCategory);
+                    {
+                        await _viewModelFactory.RepopulateCaptchaAsync(model);
+                        model.CaptchaMessage = ExceptionMessages.NoCategory;
+                        return View(model);
+                    }
 
                     if (string.IsNullOrEmpty(model.Text))
-                        throw new SuggestionException(ExceptionMessages.NoText);
+                    {
+                        await _viewModelFactory.RepopulateCaptchaAsync(model);
+                        model.CaptchaMessage = ExceptionMessages.NoText;
+                        return View(model);
+                    }
 
                     await _suggestionService.AddSuggestionAsync(model.Text, model.SelectedCategories);
                     return RedirectToAction("Index");

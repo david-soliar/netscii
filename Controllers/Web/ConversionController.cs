@@ -26,7 +26,7 @@ namespace netscii.Controllers.Web
 
             return await ExecuteSafe(async () =>
                 {
-                    var model = await _viewModelFactory.CreateWithDefaults(format);
+                    var model = await _viewModelFactory.CreateWithDefaultsAsync(format);
                     return View(model);
                 }, 
                 renderErrorView: true
@@ -43,7 +43,7 @@ namespace netscii.Controllers.Web
                 {
                     ConverterResult result = await _conversionService.ConvertAsync(format, model);
                     model.Result = result.Content;
-                    await _viewModelFactory.Repopulate(model, format);
+                    await _viewModelFactory.RepopulateAsync(model, format);
 
                     return View(model);
                 }, 

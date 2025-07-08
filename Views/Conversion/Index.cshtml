@@ -2,7 +2,7 @@
 @using System.Linq
 @{
     var format = Model.Format;
-    ViewData["Title"] = $"Convert image to {format}";
+    ViewData["Title"] = $"Convert image to {format.ToUpperInvariant()}";
 }
 
 @section Head {
@@ -10,7 +10,7 @@
 }
 
 
-<h1 class="mb-4">Convert Image to @format.ToUpperInvariant()</h1>
+<h1 class="mb-4">Convert Image to <span id="colorful-text">@format.ToUpperInvariant()</span></h1>
 
 <form method="post" enctype="multipart/form-data" asp-controller="Conversion" asp-action="Index" class="row g-3 align-items-start justify-content-between">
     <div class="col-md-6">
