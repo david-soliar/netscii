@@ -6,7 +6,7 @@ namespace netscii.Models.Dto
     {
         public string Image { get; set; } = string.Empty;
         public string Characters { get; set; } = string.Empty;
-        public int Scale { get; set; } = 8;
+        public int Scale { get; set; } = 4;
         public bool Invert { get; set; } = false;
         public string Font { get; set; } = string.Empty;
         public string Background { get; set; } = string.Empty;

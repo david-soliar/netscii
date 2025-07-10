@@ -4,6 +4,8 @@ using System.Text;
 using SixLabors.ImageSharp.Advanced;
 using netscii.Utils.ImageConverters.Models;
 using netscii.Utils.ImageConverters.Exceptions;
+using SixLabors.ImageSharp.Processing;
+using System.Linq;
 
 
 namespace netscii.Utils.ImageConverters.Converters
@@ -14,44 +16,39 @@ namespace netscii.Utils.ImageConverters.Converters
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
-            int width = image.Width;
-            int height = image.Height;
-
-            var result = new ConverterResult { Width = width, Height = height };
-
 
             if (image == null)
                 throw new ConverterException(ConverterErrorCode.ImageLoadFailed);
 
-            if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
+            if (options.Scale <= 0 || options.Scale >= image.Width || options.Scale >= image.Height)
                 throw new ConverterException(ConverterErrorCode.InvalidScale);
 
-
             if (string.IsNullOrEmpty(options.Characters))
-                options.Characters = "Aa";
+                options.Characters = "A_";
 
             if (string.IsNullOrEmpty(options.Font))
                 options.Font = "Consolas";
 
 
+            image.Mutate(x => x.Resize(image.Width / options.Scale, image.Height / options.Scale));
+
+            var result = new ConverterResult { Width = image.Width, Height = image.Height };
+
             var head = new StringBuilder();
             var text = new StringBuilder();
 
-            var memoryGroup = image.GetPixelMemoryGroup();
-
-            var pixelMemory = memoryGroup[0];
-            var pixels = pixelMemory.Span;
-
             var definedColors = new List<Rgba32>();
 
-            for (int y = 0; y < height; y += options.Scale)
+            int x = 0;
+            var memoryGroup = image.GetPixelMemoryGroup();
+
+            foreach (var memory in memoryGroup)
             {
-                for (int x = 0; x < width; x += options.Scale)
+                var pixels = memory.Span;
+
+                for (int i = 0; i < pixels.Length;)
                 {
-                    int index = y * width + x;
-
-                    Rgba32 pixel = pixels[index];
-
+                    Rgba32 pixel = pixels[i];
                     if (options.Invert)
                         pixel = ConverterHelpers.InvertPixel(pixel);
 
@@ -65,8 +62,16 @@ namespace netscii.Utils.ImageConverters.Converters
                     int indexOfColor = definedColors.IndexOf(pixel);
 
                     text.Append($"\\cf{indexOfColor + 1} {options.Characters[charIndex]} ");
+
+                    i += 1;
+                    x += 1;
+
+                    if (x >= image.Width)
+                    {
+                        x = 0;
+                        text.AppendLine("\\line");
+                    }
                 }
-                text.AppendLine("\\line");
             }
 
             head.AppendLine("{\\rtf1\\ansi\\deff0");

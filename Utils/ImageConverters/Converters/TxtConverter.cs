@@ -4,7 +4,7 @@ using System.Text;
 using netscii.Utils.ImageConverters.Models;
 using SixLabors.ImageSharp.Advanced;
 using netscii.Utils.ImageConverters.Exceptions;
-
+using SixLabors.ImageSharp.Processing;
 
 namespace netscii.Utils.ImageConverters.Converters
 {
@@ -14,52 +14,57 @@ namespace netscii.Utils.ImageConverters.Converters
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
-            int width = image.Width;
-            int height = image.Height;
-
-            var result = new ConverterResult { Width = width, Height = height };
-
 
             if (image == null)
                 throw new ConverterException(ConverterErrorCode.ImageLoadFailed);
 
-            if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
+            if (options.Scale <= 0 || options.Scale >= image.Width || options.Scale >= image.Height)
                 throw new ConverterException(ConverterErrorCode.InvalidScale);
 
 
             if (string.IsNullOrEmpty(options.Characters))
-                options.Characters = "Aa";
+                options.Characters = "A_";
 
+
+            image.Mutate(x => x.Resize(image.Width / options.Scale, image.Height / (options.Scale * 2)));
+
+            var result = new ConverterResult { Width = image.Width, Height = image.Height };
 
             var text = new StringBuilder();
 
+            int x = 0;
             var memoryGroup = image.GetPixelMemoryGroup();
 
-            var pixelMemory = memoryGroup[0];
-            var pixels = pixelMemory.Span;
-
-            for (int y = 0; y < height; y += (options.Scale * 2))
+            foreach (var memory in memoryGroup)
             {
-                for (int x = 0; x < width;)
-                {
-                    int initialX = x;
-                    int index = y * width;
+                var pixels = memory.Span;
 
-                    Rgba32 pixel = pixels[index + x];
+                for (int i = 0; i < pixels.Length;)
+                {
+                    Rgba32 pixel = pixels[i];
                     if (options.Invert)
                         pixel = ConverterHelpers.InvertPixel(pixel);
 
-                    x += options.Scale;
-                    while (x < width && pixel.Equals(pixels[index + x]))
-                        x += options.Scale;
+                    int initialX = x;
+                    int count = 1;
 
-                    int count = (x - initialX) / options.Scale * 2;
+                    while (i + count < pixels.Length && pixels[i + count].Equals(pixel) && (x + count) < image.Width)
+                    {
+                        count++;
+                    }
 
                     int charIndex = ConverterHelpers.GetCharIndex(pixel, options.Characters.Length);
-
                     text.Append(count > 1 ? new string(options.Characters[charIndex], count) : options.Characters[charIndex]);
+
+                    i += count;
+                    x += count;
+
+                    if (x >= image.Width)
+                    {
+                        x = 0;
+                        text.Append("\n");
+                    }
                 }
-                text.Append("\n");
             }
 
             result.Content = text.ToString();

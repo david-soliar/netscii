@@ -3,8 +3,8 @@ using netscii.Utils.ImageConverters.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System.Text;
-
 
 namespace netscii.Utils.ImageConverters.Converters
 {
@@ -14,25 +14,24 @@ namespace netscii.Utils.ImageConverters.Converters
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
-            int width = image.Width;
-            int height = image.Height;
-
-            var result = new ConverterResult { Width = width, Height = height };
-
 
             if (image == null)
                 throw new ConverterException(ConverterErrorCode.ImageLoadFailed);
 
-            if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
+            if (options.Scale <= 0 || options.Scale >= image.Width || options.Scale >= image.Height)
                 throw new ConverterException(ConverterErrorCode.InvalidScale);
 
 
             if (string.IsNullOrEmpty(options.Characters))
-                options.Characters = "Aa";
+                options.Characters = "A_";
 
             if (string.IsNullOrEmpty(options.Font))
                 options.Font = "inconsolata";
 
+
+            image.Mutate(x => x.Resize(image.Width / options.Scale, image.Height / options.Scale));
+
+            var result = new ConverterResult { Width = image.Width, Height = image.Height };
 
             var document = new StringBuilder();
             var tex = new StringBuilder();
@@ -48,41 +47,48 @@ namespace netscii.Utils.ImageConverters.Converters
                 document.AppendLine("\\pagecolor{mybg}");
             }
 
+            int x = 0;
             var memoryGroup = image.GetPixelMemoryGroup();
 
-            var pixelMemory = memoryGroup[0];
-            var pixels = pixelMemory.Span;
-
-            for (int y = 0; y < height; y += options.Scale)
+            foreach (var memory in memoryGroup)
             {
-                for (int x = 0; x < width;)
-                {
-                    int initialX = x;
-                    int index = y * width;
+                var pixels = memory.Span;
 
-                    Rgba32 pixel = pixels[index + x];
+                for (int i = 0; i < pixels.Length;)
+                {
+                    Rgba32 pixel = pixels[i];
                     if (options.Invert)
                         pixel = ConverterHelpers.InvertPixel(pixel);
 
-                    x += options.Scale;
-                    while (x < width && pixel.Equals(pixels[index + x]))
-                        x += options.Scale;
+                    int initialX = x;
+                    int count = 1;
 
-                    int count = (x - initialX) / options.Scale;
+                    while (i + count < pixels.Length && pixels[i + count].Equals(pixel) && (x + count) < image.Width)
+                    {
+                        count++;
+                    }
 
                     int charIndex = ConverterHelpers.GetCharIndex(pixel, options.Characters.Length);
 
                     tex.AppendFormat("\n\t\t\t{{\\color[rgb]{{{0},{1},{2}}} {3}}}",
                         pixel.R / 255.0, pixel.G / 255.0, pixel.B / 255.0,
                         new string(options.Characters[charIndex], count));
+
+                    i += count;
+                    x += count;
+
+                    if (x >= image.Width)
+                    {
+                        x = 0;
+                        tex.AppendLine("\n\t\t\t\\newline");
+                    }
                 }
-                tex.AppendLine("\n\t\t\t\\newline");
             }
 
             double charWidthCm = 0.2;
             double charHeightCm = 0.28;
-            double paperWidthCm = charWidthCm * width;
-            double paperHeightCm = charHeightCm * height;
+            double paperWidthCm = charWidthCm * image.Width;
+            double paperHeightCm = charHeightCm * image.Height;
 
             document.AppendLine($"\\usepackage[paperwidth={paperWidthCm}cm, paperheight={paperHeightCm}cm, margin=0pt]{{geometry}}");
 

@@ -4,6 +4,7 @@ using System.Text;
 using netscii.Utils.ImageConverters.Models;
 using SixLabors.ImageSharp.Advanced;
 using netscii.Utils.ImageConverters.Exceptions;
+using SixLabors.ImageSharp.Processing;
 
 
 namespace netscii.Utils.ImageConverters.Converters
@@ -14,49 +15,46 @@ namespace netscii.Utils.ImageConverters.Converters
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
-            int width = image.Width;
-            int height = image.Height;
-
-            var result = new ConverterResult { Width = width, Height = height };
-
 
             if (image == null)
                 throw new ConverterException(ConverterErrorCode.ImageLoadFailed);
 
-            if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
+            if (options.Scale <= 0 || options.Scale >= image.Width || options.Scale >= image.Height)
                 throw new ConverterException(ConverterErrorCode.InvalidScale);
 
-
             if (string.IsNullOrEmpty(options.Characters))
-                options.Characters = "Aa";
+                options.Characters = "A_";
 
             if (string.IsNullOrEmpty(options.Font))
                 options.Font = "monospace";
 
 
+            image.Mutate(x => x.Resize(image.Width / options.Scale, image.Height / options.Scale));
+
+            var result = new ConverterResult { Width = image.Width, Height = image.Height };
+
+
             var svg = new StringBuilder();
 
-            var memoryGroup = image.GetPixelMemoryGroup();
-
-            var pixelMemory = memoryGroup[0];
-            var pixels = pixelMemory.Span;
-
-            svg.AppendLine($"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {width / options.Scale * 24 - 8} {height / options.Scale * 32}\" width=\"100%\" height=\"100%\" font-family=\"{options.Font}\" font-size=\"32\" preserveAspectRatio=\"xMinYMin meet\">");
+            svg.AppendLine($"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {image.Width * 24 - 8} {image.Height * 32}\" width=\"100%\" height=\"100%\" font-family=\"{options.Font}\" font-size=\"32\" preserveAspectRatio=\"xMinYMin meet\">");
 
             string bg = options.UseBackgroundColor && !string.IsNullOrWhiteSpace(options.Background) ? options.Background : "transparent";
             svg.AppendLine($"\t<rect width=\"100%\" height=\"100%\" fill=\"{bg}\" />\n");
 
+            int x = 0;
             int ySVG = 24;
-            for (int y = 0; y < height; y += options.Scale)
-            {
-                svg.AppendLine($"\t<text y=\"{ySVG}\">");
-                ySVG += 32;
-                int xSVG = 0;
-                for (int x = 0; x < width; x += options.Scale)
-                {
-                    int index = y * width + x;
+            int xSVG = 0;
+            var memoryGroup = image.GetPixelMemoryGroup();
 
-                    Rgba32 pixel = pixels[index];
+            svg.AppendLine($"\t<text y=\"{ySVG}\">");
+
+            foreach (var memory in memoryGroup)
+            {
+                var pixels = memory.Span;
+
+                for (int i = 0; i < pixels.Length;)
+                {
+                    Rgba32 pixel = pixels[i];
                     if (options.Invert)
                         pixel = ConverterHelpers.InvertPixel(pixel);
 
@@ -64,10 +62,24 @@ namespace netscii.Utils.ImageConverters.Converters
 
                     string hex = $"{pixel.R:X2}{pixel.G:X2}{pixel.B:X2}";
                     svg.AppendLine($"\t\t<tspan x=\"{xSVG}\" fill=\"#{hex}\">{options.Characters[charIndex]}</tspan>");
+
+                    i += 1;
+                    x += 1;
                     xSVG += 24;
+
+                    if (x >= image.Width)
+                    {
+                        x = 0;
+                        ySVG += 32;
+                        xSVG = 0;
+                        svg.AppendLine("\t</text>");
+                        svg.AppendLine($"\t<text y=\"{ySVG}\">");
+                    }
                 }
-                svg.AppendLine("\t</text>");
             }
+            int n = $"\t<text y=\"{ySVG}\">".Length;
+            svg.Remove(svg.Length - n, n);
+
             svg.AppendLine("</svg>");
 
             result.Content = svg.ToString();

@@ -3,9 +3,8 @@ using netscii.Utils.ImageConverters.Models;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Advanced;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System.Text;
-using System.Text.Json.Nodes;
-
 
 namespace netscii.Utils.ImageConverters.Converters
 {
@@ -15,33 +14,26 @@ namespace netscii.Utils.ImageConverters.Converters
         {
             using Image<Rgba32> image = Image.Load<Rgba32>(imageStream);
 
-            int width = image.Width;
-            int height = image.Height;
-
-            var result = new ConverterResult { Width = width, Height = height };
-
 
             if (image == null)
                 throw new ConverterException(ConverterErrorCode.ImageLoadFailed);
 
-            if (options.Scale <= 0 || options.Scale >= width || options.Scale >= height)
+            if (options.Scale <= 0 || options.Scale >= image.Width || options.Scale >= image.Height)
                 throw new ConverterException(ConverterErrorCode.InvalidScale);
 
-
             if (string.IsNullOrEmpty(options.Characters))
-                options.Characters = "Aa";
+                options.Characters = "A_";
 
             if (string.IsNullOrEmpty(options.Font))
                 options.Font = "monospace";
 
 
+            image.Mutate(x => x.Resize(image.Width / options.Scale, image.Height / options.Scale));
+
+            var result = new ConverterResult { Width = image.Width, Height = image.Height };
+
             var css = new StringBuilder();
             var html = new StringBuilder();
-
-            var memoryGroup = image.GetPixelMemoryGroup();
-
-            var pixelMemory = memoryGroup[0];
-            var pixels = pixelMemory.Span;
 
             var definedColors = new HashSet<string>();
 
@@ -62,25 +54,28 @@ namespace netscii.Utils.ImageConverters.Converters
 
             html.Append("\n<pre id=\"netscii-html-result\">\n");
 
-            for (int y = 0; y < height; y += options.Scale)
-            {
-                for (int x = 0; x < width;)
-                {
-                    int initialX = x;
-                    int index = y * width;
+            int x = 0;
+            var memoryGroup = image.GetPixelMemoryGroup();
 
-                    Rgba32 pixel = pixels[index + x];
+            foreach (var memory in memoryGroup)
+            {
+                var pixels = memory.Span;
+
+                for (int i = 0; i < pixels.Length;)
+                {
+                    Rgba32 pixel = pixels[i];
                     if (options.Invert)
                         pixel = ConverterHelpers.InvertPixel(pixel);
 
-                    x += options.Scale;
-                    while (x < width && pixel.Equals(pixels[index + x]))
-                        x += options.Scale;
+                    int initialX = x;
+                    int count = 1;
 
-                    int count = (x - initialX) / options.Scale;
+                    while (i + count < pixels.Length && pixels[i + count].Equals(pixel) && (x + count) < image.Width)
+                    {
+                        count++;
+                    }
 
                     int charIndex = ConverterHelpers.GetCharIndex(pixel, options.Characters.Length);
-
                     string hex = $"{pixel.R:X2}{pixel.G:X2}{pixel.B:X2}";
                     string className = $"c{hex}";
 
@@ -93,9 +88,18 @@ namespace netscii.Utils.ImageConverters.Converters
                     html.AppendFormat("<span class='{0}'>", className);
                     html.Append(count > 1 ? new string(options.Characters[charIndex], count) : options.Characters[charIndex]);
                     html.Append("</span>");
+
+                    i += count;
+                    x += count;
+
+                    if (x >= image.Width)
+                    {
+                        x = 0;
+                        html.Append("\n");
+                    }
                 }
-                html.Append("\n");
             }
+
 
             css.Append("</style>");
             html.Append("</pre>");
