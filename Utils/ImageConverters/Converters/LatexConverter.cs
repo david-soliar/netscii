@@ -70,7 +70,7 @@ namespace netscii.Utils.ImageConverters.Converters
 
                     int charIndex = ConverterHelpers.GetCharIndex(pixel, options.Characters.Length);
 
-                    tex.AppendFormat("\n\t\t\t{{\\color[rgb]{{{0},{1},{2}}} {3}}}",
+                    tex.AppendFormat("{{\\color[rgb]{{{0},{1},{2}}}{3}}}",
                         pixel.R / 255.0, pixel.G / 255.0, pixel.B / 255.0,
                         new string(options.Characters[charIndex], count));
 
@@ -80,12 +80,12 @@ namespace netscii.Utils.ImageConverters.Converters
                     if (x >= image.Width)
                     {
                         x = 0;
-                        tex.AppendLine("\n\t\t\t\\newline");
+                        tex.AppendLine("\\newline");
                     }
                 }
             }
 
-            double charWidthCm = 0.2;
+            double charWidthCm = 0.214;
             double charHeightCm = 0.28;
             double paperWidthCm = charWidthCm * image.Width;
             double paperHeightCm = charHeightCm * image.Height;

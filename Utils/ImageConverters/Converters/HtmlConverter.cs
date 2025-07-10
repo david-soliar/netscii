@@ -47,6 +47,7 @@ namespace netscii.Utils.ImageConverters.Converters
                 "    overflow-x: auto;\n" +
                 "    font-family: {0};\n" +
                 "    background-color: {1};\n" +
+                "    letter-spacing: 0.25em;\n" +
                 "}}\n",
             options.Font,
                 options.UseBackgroundColor && !string.IsNullOrWhiteSpace(options.Background) ? options.Background : "transparent");

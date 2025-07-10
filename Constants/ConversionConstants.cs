@@ -4,8 +4,8 @@
     {
         public static readonly IReadOnlyDictionary<string, string> Characters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            ["html"] = "%#*+=-:. ",
-            ["svg"] = "%#*+=-:. ",
+            ["html"] = "#$023456789?Labdeghnopqu_ ",
+            ["svg"] = "#$023456789?Labdeghnopqu_ ",
             ["txt"] = "#$023456789?Labdeghnopqu_ ",
             ["latex"] = "MNHUCIi;,.",
             ["rtf"] = "%#+=-:."

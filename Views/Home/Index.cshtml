@@ -10,12 +10,14 @@
         Upload an image and transform it into a variety of text-based formats - perfect for terminals, documents, websites, and creative experiments.
     </p>
     <p>
-        Check out the <a id="colorful-text" href="/swagger/index.html" target="_blank">netscii API</a> for image conversion and related features.
+        Check out the <a href="/swagger/index.html" target="_blank">netscii API</a> for image conversion and related features.
     </p>
     <p>
         Supported formats:
         <strong>ANSI</strong>, <strong>Emoji</strong>, <strong>HTML</strong>, <strong>TXT</strong>, <strong>LaTeX</strong>, <strong>RTF</strong> and <strong>SVG</strong>.
     </p>
+    <p>
+        <a href="#" onclick="openRandomExample()">See Some Examples</a>
     </p>
 </div>
 
@@ -25,22 +27,22 @@
 
 <div class="row text-center">
     <div class="col-md-3 mb-4">
-        <img src="https://dummyimage.com/600x400/2a02a9/000000&text=Placeholder" class="img-fluid rounded shadow-sm" alt="ANSI Art Example" />
+        <img src="https://dummyimage.com/800x400/2a02a9/000000&text=ANSI" class="img-fluid rounded shadow-sm" alt="ANSI Art Example" />
         <h5 class="mt-2">ANSI</h5>
         <p class="text-muted small">Rendered with ANSI escape codes for terminals.</p>
     </div>
     <div class="col-md-3 mb-4">
-        <img src="https://dummyimage.com/600x400/2a02a9/000000&text=Placeholder" class="img-fluid rounded shadow-sm" alt="Emoji Art Example" />
+        <img src="https://dummyimage.com/800x400/2a02a9/000000&text=Emoji" class="img-fluid rounded shadow-sm" alt="Emoji Art Example" />
         <h5 class="mt-2">Emoji</h5>
-        <p class="text-muted small">Converted into colorful emojis for fun or chat use.</p>
+        <p class="text-muted small">Converted into colorful emojis.</p>
     </div>
     <div class="col-md-3 mb-4">
-        <img src="https://dummyimage.com/600x400/2a02a9/000000&text=Placeholder" class="img-fluid rounded shadow-sm" alt="HTML Output Example" />
+        <img src="https://dummyimage.com/800x400/2a02a9/000000&text=HTML" class="img-fluid rounded shadow-sm" alt="HTML Output Example" />
         <h5 class="mt-2">HTML</h5>
         <p class="text-muted small">Styled with monospace fonts for browser display.</p>
     </div>
     <div class="col-md-3 mb-4">
-        <img src="https://dummyimage.com/600x400/2a02a9/000000&text=Placeholder" class="img-fluid rounded shadow-sm" alt="Plain Text Example" />
+        <img src="https://dummyimage.com/800x400/2a02a9/000000&text=Text" class="img-fluid rounded shadow-sm" alt="Plain Text Example" />
         <h5 class="mt-2">Plain Text</h5>
         <p class="text-muted small">Classic ASCII export for `.txt` files.</p>
     </div>
@@ -48,18 +50,28 @@
 
 <div class="row text-center mt-4">
     <div class="col-md-3 mb-4">
-        <img src="https://dummyimage.com/600x400/2a02a9/000000&text=Placeholder" class="img-fluid rounded shadow-sm" alt="LaTeX Example" />
+        <img src="https://dummyimage.com/800x400/2a02a9/000000&text=LaTeX" class="img-fluid rounded shadow-sm" alt="LaTeX Example" />
         <h5 class="mt-2">LaTeX</h5>
         <p class="text-muted small">Use in academic documents and papers.</p>
     </div>
     <div class="col-md-3 mb-4">
-        <img src="https://dummyimage.com/600x400/2a02a9/000000&text=Placeholder" class="img-fluid rounded shadow-sm" alt="RTF Example" />
+        <img src="https://dummyimage.com/800x400/2a02a9/000000&text=RTF" class="img-fluid rounded shadow-sm" alt="RTF Example" />
         <h5 class="mt-2">RTF</h5>
         <p class="text-muted small">Formatted text for Word and editors supporting RTF.</p>
     </div>
     <div class="col-md-3 mb-4">
-        <img src="https://dummyimage.com/600x400/2a02a9/000000&text=Placeholder" class="img-fluid rounded shadow-sm" alt="SVG Vector Example" />
+        <img src="https://dummyimage.com/800x400/2a02a9/000000&text=SVG" class="img-fluid rounded shadow-sm" alt="SVG Vector Example" />
         <h5 class="mt-2">SVG</h5>
-        <p class="text-muted small">Scalable vector text art, great for print or web.</p>
+        <p class="text-muted small">Scalable vector text art.</p>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function openRandomExample() {
+          const index = Math.floor(Math.random() * 6);
+          const url = `/images/${index}.svg`;
+          window.open(url, '_blank');
+        }
+    </script>
+}

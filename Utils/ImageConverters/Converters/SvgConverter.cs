@@ -36,7 +36,7 @@ namespace netscii.Utils.ImageConverters.Converters
 
             var svg = new StringBuilder();
 
-            svg.AppendLine($"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {image.Width * 24 - 8} {image.Height * 32}\" width=\"100%\" height=\"100%\" font-family=\"{options.Font}\" font-size=\"32\" preserveAspectRatio=\"xMinYMin meet\">");
+            svg.AppendLine($"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {image.Width * 32} {image.Height * 32}\" width=\"100%\" height=\"100%\" font-family=\"{options.Font}\" font-size=\"32\" preserveAspectRatio=\"xMinYMin meet\">");
 
             string bg = options.UseBackgroundColor && !string.IsNullOrWhiteSpace(options.Background) ? options.Background : "transparent";
             svg.AppendLine($"\t<rect width=\"100%\" height=\"100%\" fill=\"{bg}\" />\n");
@@ -65,7 +65,7 @@ namespace netscii.Utils.ImageConverters.Converters
 
                     i += 1;
                     x += 1;
-                    xSVG += 24;
+                    xSVG += 32;
 
                     if (x >= image.Width)
                     {
@@ -78,7 +78,7 @@ namespace netscii.Utils.ImageConverters.Converters
                 }
             }
             int n = $"\t<text y=\"{ySVG}\">".Length;
-            svg.Remove(svg.Length - n, n);
+            svg.Remove(svg.Length - n - 1, n);
 
             svg.AppendLine("</svg>");
 

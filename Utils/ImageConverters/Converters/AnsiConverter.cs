@@ -64,7 +64,7 @@ namespace netscii.Utils.ImageConverters.Converters
                 offset += memory.Length;
             }
 
-            for (int y = 0; y < image.Height; y += 2)
+            for (int y = 0; y < image.Height; y ++)
             {
                 for (int x = 0; x < image.Width; x++)
                 {
