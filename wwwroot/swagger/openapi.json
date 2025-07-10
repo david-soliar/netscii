@@ -1,0 +1,470 @@
+{
+	"openapi": "3.0.3",
+	"info": {
+		"title": "netscii API",
+		"version": "1.0.0",
+		"description": "API for image conversion and retrieval of related resources such as colors, fonts, and logs.",
+		"contact": {}
+	},
+	"paths": {
+		"/api/fonts/{format}": {
+			"get": {
+				"tags": [ "Fonts" ],
+				"summary": "Get fonts by format",
+				"description": "Returns a dictionary with the specified format as key and a list of fonts as value.",
+				"operationId": "GetFontsByFormat",
+				"parameters": [
+					{
+						"name": "format",
+						"in": "path",
+						"required": true,
+						"description": "File format (txt, html...)",
+						"schema": {
+							"type": "string",
+							"example": "html"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Fonts available in the requested format",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"minProperties": 0,
+									"maxProperties": 1,
+									"additionalProperties": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"example": {
+										"html": [ "monospace", "Courier" ]
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Unsupported format",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/fonts": {
+			"get": {
+				"tags": [ "Fonts" ],
+				"summary": "Get all fonts grouped by format",
+				"description": "Returns a dictionary where each key is a file format and the value is a list of fonts available for that format.",
+				"operationId": "GetFonts",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "All fonts grouped by format",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"additionalProperties": {
+										"type": "array",
+										"items": {
+											"type": "string"
+										}
+									},
+									"example": {
+										"html": [ "monospace", "Courier" ],
+										"rtf": [ "monospace", "Courier" ]
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/colors": {
+			"get": {
+				"tags": [ "Colors" ],
+				"summary": "Get available named colors",
+				"description": "Returns a dictionary mapping named colors to their hex values. These names can be used in the 'background' parameter instead of a hex color.",
+				"operationId": "GetColors",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "All colors",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"additionalProperties": {
+										"type": "string",
+										"pattern": "^#(?:[0-9a-fA-F]{3}){1,2}$"
+									},
+									"example": {
+										"black": "#000000",
+										"white": "#ffffff",
+										"red": "#ff0000",
+										"lime": "#00ff00"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/platforms": {
+			"get": {
+				"tags": [ "Platforms" ],
+				"summary": "Get supported platforms",
+				"description": "Returns a list of supported platforms for platform-specific conversions (ANSI rendering differences).",
+				"operationId": "GetPlatforms",
+				"parameters": [],
+				"responses": {
+					"200": {
+						"description": "Supported platforms",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "string",
+										"example": "Windows Console"
+									},
+									"example": [ "Windows Console", "Unix-like Shell" ]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/log": {
+			"get": {
+				"tags": [ "Logs" ],
+				"summary": "Get logs for a period",
+				"description": "Returns a list of conversion log entries from the past N hours, where N is the specified `period`.",
+				"operationId": "GetLogs",
+				"parameters": [
+					{
+						"name": "period",
+						"in": "query",
+						"required": true,
+						"description": "Number of hours to retrieve logs from (e.g., 1 = last 1 hour).",
+						"schema": {
+							"type": "integer",
+							"minimum": 1,
+							"example": 1
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "List of conversion log entries",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"type": "object",
+										"properties": {
+											"activity": {
+												"type": "object",
+												"properties": {
+													"format": {
+														"type": "string",
+														"example": "txt"
+													},
+													"timestamp": {
+														"type": "string",
+														"format": "date-time",
+														"example": "2024-01-01T00:00:00Z"
+													},
+													"width": {
+														"type": "integer",
+														"example": 332
+													},
+													"height": {
+														"type": "integer",
+														"example": 152
+													},
+													"processingTimeMs": {
+														"type": "integer",
+														"example": 88
+													},
+													"outputLengthBytes": {
+														"type": "integer",
+														"example": 850
+													}
+												}
+											},
+											"parameters": {
+												"type": "object",
+												"properties": {
+													"characters": {
+														"type": "string",
+														"example": "#$023456789?Labdeghnopqu_"
+													},
+													"font": {
+														"type": "string",
+														"example": ""
+													},
+													"background": {
+														"type": "string",
+														"example": ""
+													},
+													"scale": {
+														"type": "integer",
+														"example": 8
+													},
+													"invert": {
+														"type": "boolean",
+														"example": false
+													},
+													"platform": {
+														"type": "string",
+														"example": ""
+													}
+												}
+											}
+										}
+									},
+									"example": [
+										{
+											"activity": {
+												"format": "txt",
+												"timestamp": "2024-01-01T00:00:00Z",
+												"width": 332,
+												"height": 152,
+												"processingTimeMs": 88,
+												"outputLengthBytes": 850
+											},
+											"parameters": {
+												"characters": "#$023456789?Labdeghnopqu_",
+												"font": "",
+												"background": "",
+												"scale": 8,
+												"invert": false,
+												"platform": ""
+											}
+										}
+									]
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/convert/{format}": {
+			"post": {
+				"tags": [ "Conversion" ],
+				"summary": "Convert an image to specified format",
+				"description": "Accepts either JSON (base64 image) or multipart/form-data (file upload) with conversion parameters.",
+				"operationId": "ConvertImage",
+				"parameters": [
+					{
+						"name": "format",
+						"in": "path",
+						"required": true,
+						"description": "Output format (e.g., txt, ansi, html)",
+						"schema": {
+							"type": "string",
+							"example": "txt"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"image": {
+										"type": "string",
+										"description": "Base64-encoded image string"
+									},
+									"characters": {
+										"type": "string",
+										"default": ""
+									},
+									"scale": {
+										"type": "integer",
+										"default": 8
+									},
+									"invert": {
+										"type": "boolean",
+										"default": false
+									},
+									"font": {
+										"type": "string",
+										"default": ""
+									},
+									"background": {
+										"type": "string",
+										"default": ""
+									},
+									"platform": {
+										"type": "string",
+										"default": ""
+									},
+									"useSmallPalette": {
+										"type": "boolean",
+										"default": false
+									}
+								},
+								"required": [ "image" ]
+							}
+						},
+						"multipart/form-data": {
+							"schema": {
+								"type": "object",
+								"properties": {
+									"image": {
+										"type": "string",
+										"format": "binary",
+										"description": "Image file upload"
+									},
+									"characters": {
+										"type": "string",
+										"default": ""
+									},
+									"scale": {
+										"type": "integer",
+										"default": 8
+									},
+									"invert": {
+										"type": "boolean",
+										"default": false
+									},
+									"font": {
+										"type": "string",
+										"default": ""
+									},
+									"background": {
+										"type": "string",
+										"default": ""
+									},
+									"platform": {
+										"type": "string",
+										"default": ""
+									},
+									"useSmallPalette": {
+										"type": "boolean",
+										"default": false
+									}
+								},
+								"required": [ "image" ]
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Successful conversion result",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"width": {
+											"type": "integer",
+											"example": 332
+										},
+										"height": {
+											"type": "integer",
+											"example": 152
+										},
+										"processingTimeMs": {
+											"type": "integer",
+											"example": 3
+										},
+										"outputLengthBytes": {
+											"type": "integer",
+											"example": 850
+										},
+										"format": {
+											"type": "string",
+											"example": "txt"
+										},
+										"mimeType": {
+											"type": "string",
+											"example": "text/plain"
+										},
+										"content": {
+											"type": "string",
+											"example": "888888888888..."
+										}
+									},
+									"required": [ "width", "height", "processingTimeMs", "outputLengthBytes", "format", "mimeType", "content" ]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Invalid request due to parameter constraints",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "Internal server error",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/ErrorResponse"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"security": [],
+	"servers": [
+		{
+			"url": "/",
+			"description": "netscii"
+		}
+	],
+	"components": {
+		"links": {},
+		"callbacks": {},
+		"schemas": {
+			"ErrorResponse": {
+				"type": "object",
+				"properties": {
+					"code": {
+						"type": "integer",
+						"example": 400
+					},
+					"message": {
+						"type": "string",
+						"example": "Scale must be greater than zero and smaller than width and height of the image."
+					},
+					"timestamp": {
+						"type": "string",
+						"format": "date-time",
+						"example": "2024-01-01T00:00:00Z"
+					}
+				},
+				"required": [ "code", "message", "timestamp" ]
+			}
+		}
+	}
+}

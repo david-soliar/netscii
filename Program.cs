@@ -1,4 +1,3 @@
-using System.Reflection;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using netscii.Models;
@@ -35,20 +34,9 @@ builder.Services.AddScoped<SuggestionViewModelFactory>();
 
 builder.Services.AddMemoryCache();
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-
-    options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = "API",
-        Version = "v1"
-    });
-});
-
 var app = builder.Build();
+
+app.UseStaticFiles();
 
 if (!app.Environment.IsDevelopment())
     app.UseHsts();
@@ -60,8 +48,6 @@ app.UseSession();
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthorization();
-
-app.MapStaticAssets();
 
 app.MapControllers();
 app.MapControllerRoute(
@@ -75,11 +61,5 @@ if (app.Environment.IsDevelopment())
     await dbContext.Database.MigrateAsync();
     DBInitializer.Initialize(dbContext);
 }
-
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "API");
-});
 
 app.Run();

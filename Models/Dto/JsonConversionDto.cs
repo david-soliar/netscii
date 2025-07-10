@@ -10,8 +10,10 @@ namespace netscii.Models.Dto
         public bool Invert { get; set; } = false;
         public string Font { get; set; } = string.Empty;
         public string Background { get; set; } = string.Empty;
+
         [JsonIgnore]
         public bool UseBackgroundColor { get; set; } = false;
+
         public string Platform { get; set; } = string.Empty;
         public bool UseSmallPalette { get; set; } = false;
         public int Period { get; set; } = 24;
