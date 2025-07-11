@@ -18,18 +18,6 @@
     backgroundInput.addEventListener('input', () => {
         updateColorDisplay();
     });
-
-    document.querySelectorAll('.btn-click-effect').forEach(button => {
-        button.addEventListener('click', e => {
-            const rect = button.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            button.style.setProperty('--click-x', x + 'px');
-            button.style.setProperty('--click-y', y + 'px');
-            console.log("???");
-        });
-    });
 });
 
 function rgbToHex(rgb) {
