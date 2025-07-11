@@ -43,7 +43,7 @@ namespace netscii.Services
 
         public async Task<List<LogDto>> GetLogsAsync(string period)
         {
-            return await _repository.GetLogsAsync(ConversionConstants.Periods.GetValueOrDefault(period, TimeSpan.FromDays(7)));
+            return await _repository.GetLogsAsync(ConversionConstants.Periods.GetValueOrDefault(period, TimeSpan.FromHours(24)));
         }
 
         public async Task<List<LogDto>> GetLogsAsync(int period)
