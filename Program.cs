@@ -48,12 +48,9 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}");
 
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<NetsciiContext>();
-    await dbContext.Database.MigrateAsync();
-    DBInitializer.Initialize(dbContext);
-}
+using var scope = app.Services.CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<NetsciiContext>();
+await dbContext.Database.MigrateAsync();
+DBInitializer.Initialize(dbContext);
 
 app.Run();
