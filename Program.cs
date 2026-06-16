@@ -18,19 +18,13 @@ builder.Services.AddDbContext<NetsciiContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<FontRepository>();
-builder.Services.AddScoped<ColorRepository>();
 builder.Services.AddScoped<ConversionLoggingRepository>();
-builder.Services.AddScoped<SuggestionRepository>();
 
 builder.Services.AddScoped<FontService>();
-builder.Services.AddScoped<ColorService>();
 builder.Services.AddScoped<ConversionService>();
 builder.Services.AddScoped<ConversionLoggingService>();
-builder.Services.AddScoped<SuggestionService>();
-builder.Services.AddScoped<CaptchaService>();
 
 builder.Services.AddScoped<ConversionViewModelFactory>();
-builder.Services.AddScoped<SuggestionViewModelFactory>();
 
 builder.Services.AddMemoryCache();
 

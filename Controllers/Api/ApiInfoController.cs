@@ -11,14 +11,22 @@ namespace netscii.Controllers.Api
     public class ApiInfoController : BaseController
     {
         private readonly FontService _fontService;
-        private readonly ColorService _colorService;
         private readonly ConversionLoggingService _conversionLoggingService;
 
-        public ApiInfoController(ConversionService conversionService, FontService fontService, ColorService colorService, ConversionLoggingService conversionLoggingService) : base(conversionService)
+        public ApiInfoController(ConversionService conversionService, FontService fontService, ConversionLoggingService conversionLoggingService) : base(conversionService)
         {
             _fontService = fontService;
-            _colorService = colorService;
             _conversionLoggingService = conversionLoggingService;
+        }
+
+        [HttpGet("formats")]
+        public async Task<IActionResult> GetFormats()
+        {
+            return await ExecuteSafe(async () =>
+            {
+                var result = await Task.FromResult<object>(_conversionService.SupportedFormats());
+                return Ok(result);
+            });
         }
 
         [HttpGet("fonts/{format}")]
@@ -54,22 +62,12 @@ namespace netscii.Controllers.Api
             });
         }
 
-        [HttpGet("colors")]
-        public async Task<IActionResult> GetColors()
-        {
-            return await ExecuteSafe(async () =>
-            {
-                var result = await _colorService.GetColorsAsync();
-                return Ok(result);
-            });
-        }
-
         [HttpGet("log")]
-        public async Task<IActionResult> GetLogs([FromBody] JsonConversionDto jsonRequest)
+        public async Task<IActionResult> GetLogs([FromQuery] int period)
         {
             return await ExecuteSafe(async () =>
             {
-                var logs = await _conversionLoggingService.GetLogsAsync(jsonRequest.Period);
+                var logs = await _conversionLoggingService.GetLogsAsync(period);
                 return Ok(logs);
             });
         }

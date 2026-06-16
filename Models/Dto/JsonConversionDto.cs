@@ -16,6 +16,5 @@ namespace netscii.Models.Dto
 
         public string Platform { get; set; } = string.Empty;
         public bool UseSmallPalette { get; set; } = false;
-        public int Period { get; set; } = 24;
     }
 }

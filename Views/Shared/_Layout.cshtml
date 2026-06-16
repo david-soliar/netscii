@@ -4,6 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+    <meta name="description" content="Convert images into text-based art formats like ANSI, ASCII, Emoji, HTML, SVG, LaTeX, and RTF using a web interface or API." />
+
+    <meta property="og:title" content="netscii - Image to Text Art Converter" />
+    <meta property="og:description" content="Convert images into text-based art. Try the web app or API." />
+    <meta property="og:type" content="website" />
+
     <title>@ViewData["Title"] - netscii</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -59,7 +65,6 @@
                 <ul class="list-inline d-flex justify-content-center">
                     <li class="list-inline-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
                     <li class="list-inline-item"><a href="/swagger/index.html" target="_blank">API</a></li>
-                    <li class="list-inline-item"><a asp-controller="Suggestion" asp-action="Index">Suggestions</a></li>
                     <li class="list-inline-item"><a asp-controller="ConversionLog" asp-action="Index">Log</a></li>
                     <li class="list-inline-item"><a href="https://github.com/david-soliar/netscii" target="_blank" rel="noopener noreferrer">GitHub</a></li>
                 </ul>
