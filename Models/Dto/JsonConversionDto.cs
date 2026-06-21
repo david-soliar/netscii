@@ -12,7 +12,7 @@ namespace netscii.Models.Dto
         public string Background { get; set; } = string.Empty;
 
         [JsonIgnore]
-        public bool UseBackgroundColor { get; set; } = false;
+        public bool UseBackgroundColor { get; set; } = true;
 
         public string Platform { get; set; } = string.Empty;
         public bool UseSmallPalette { get; set; } = false;

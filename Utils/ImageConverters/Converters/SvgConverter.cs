@@ -36,17 +36,17 @@ namespace netscii.Utils.ImageConverters.Converters
 
             var svg = new StringBuilder();
 
-            svg.AppendLine($"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {image.Width * 32} {image.Height * 32}\" width=\"100%\" height=\"100%\" font-family=\"{options.Font}\" font-size=\"32\" preserveAspectRatio=\"xMinYMin meet\">");
+            svg.Append($"<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 {image.Width * 32} {image.Height * 32}\" width=\"100%\" height=\"100%\" font-family=\"{options.Font}\" font-size=\"32\" preserveAspectRatio=\"xMinYMin meet\">");
 
             string bg = options.UseBackgroundColor && !string.IsNullOrWhiteSpace(options.Background) ? options.Background : "transparent";
-            svg.AppendLine($"\t<rect width=\"100%\" height=\"100%\" fill=\"{bg}\" />\n");
+            svg.Append($"<rect width=\"100%\" height=\"100%\" fill=\"{bg}\" />");
 
             int x = 0;
             int ySVG = 24;
             int xSVG = 0;
             var memoryGroup = image.GetPixelMemoryGroup();
 
-            svg.AppendLine($"\t<text y=\"{ySVG}\">");
+            svg.Append($"<text y=\"{ySVG}\">");
 
             foreach (var memory in memoryGroup)
             {
@@ -61,7 +61,7 @@ namespace netscii.Utils.ImageConverters.Converters
                     int charIndex = ConverterHelpers.GetCharIndex(pixel, options.Characters.Length);
 
                     string hex = $"{pixel.R:X2}{pixel.G:X2}{pixel.B:X2}";
-                    svg.AppendLine($"\t\t<tspan x=\"{xSVG}\" fill=\"#{hex}\">{options.Characters[charIndex]}</tspan>");
+                    svg.Append($"<tspan x=\"{xSVG}\" fill=\"#{hex}\">{options.Characters[charIndex]}</tspan>");
 
                     i += 1;
                     x += 1;
@@ -72,15 +72,15 @@ namespace netscii.Utils.ImageConverters.Converters
                         x = 0;
                         ySVG += 32;
                         xSVG = 0;
-                        svg.AppendLine("\t</text>");
-                        svg.AppendLine($"\t<text y=\"{ySVG}\">");
+                        svg.Append("</text>");
+                        svg.Append($"<text y=\"{ySVG}\">");
                     }
                 }
             }
-            int n = $"\t<text y=\"{ySVG}\">".Length;
-            svg.Remove(svg.Length - n - 1, n);
+            int n = $"<text y=\"{ySVG}\">".Length;
+            svg.Remove(svg.Length - n, n);
 
-            svg.AppendLine("</svg>");
+            svg.Append("</svg>");
 
             result.Content = svg.ToString();
             return result;

@@ -68,7 +68,7 @@ function openResultInNewTab() {
                     <title>netscii - Result</title>
                     <style>
                         body {
-                            padding: 1em;
+                            padding: 1px;
                         }
                     </style>
                 </head>
@@ -77,4 +77,20 @@ function openResultInNewTab() {
         `);
 
     newWindow.document.close();
+}
+
+function downloadResult(extension = "txt", filename = "netscii-result") {
+    const content = document.getElementById("result-container").innerHTML;
+
+    const timestamp = Date.now();
+
+    const blob = new Blob([content], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${filename}-${timestamp}.${extension}`;
+    a.click();
+
+    URL.revokeObjectURL(url);
 }
